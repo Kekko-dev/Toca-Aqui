@@ -11,7 +11,7 @@ import SwiftUI
 struct TocAquiApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Content_Camera_View()
         }
     }
 }
