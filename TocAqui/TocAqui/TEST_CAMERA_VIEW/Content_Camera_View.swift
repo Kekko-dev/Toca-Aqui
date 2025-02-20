@@ -1,17 +1,27 @@
-//
-//  Content_Camera_View.swift
-//  TocAqui
-//
-//  Created by Francesco Silvestro on 20/02/25.
-//
-
 import SwiftUI
+import AVFoundation
+import Vision
 
+// 1. Application main interface
 struct Content_Camera_View: View {
+    
+    @State private var recognizedText: String = "Scan for text"
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack(alignment: .bottom) {	
+            ScannerView(recognizedText: $recognizedText)
+                .edgesIgnoringSafeArea(.all)
+            
+            Text(recognizedText)
+                .padding()
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .padding()
+        }
     }
 }
+
+
 
 #Preview {
     Content_Camera_View()
