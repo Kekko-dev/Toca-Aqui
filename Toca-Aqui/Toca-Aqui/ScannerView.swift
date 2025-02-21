@@ -1,3 +1,11 @@
+//
+//  ScannerView.swift
+//  Toca-Aqui
+//
+//  Created by Francesco Silvestro on 21/02/25.
+//
+
+
 import SwiftUI
 import AVFoundation
 import Vision

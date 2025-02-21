@@ -7,19 +7,19 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		61C4EB282D671E87004E7866 /* TocAqui.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TocAqui.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		610479462D688C7D004BE669 /* Toca-Aqui.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Toca-Aqui.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		61C4EB2A2D671E87004E7866 /* TocAqui */ = {
+		610479482D688C7D004BE669 /* Toca-Aqui */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TocAqui;
+			path = "Toca-Aqui";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		61C4EB252D671E87004E7866 /* Frameworks */ = {
+		610479432D688C7D004BE669 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -29,18 +29,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		61C4EB1F2D671E87004E7866 = {
+		6104793D2D688C7D004BE669 = {
 			isa = PBXGroup;
 			children = (
-				61C4EB2A2D671E87004E7866 /* TocAqui */,
-				61C4EB292D671E87004E7866 /* Products */,
+				610479482D688C7D004BE669 /* Toca-Aqui */,
+				610479472D688C7D004BE669 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		61C4EB292D671E87004E7866 /* Products */ = {
+		610479472D688C7D004BE669 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				61C4EB282D671E87004E7866 /* TocAqui.app */,
+				610479462D688C7D004BE669 /* Toca-Aqui.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,64 +48,64 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		61C4EB272D671E87004E7866 /* TocAqui */ = {
+		610479452D688C7D004BE669 /* Toca-Aqui */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 61C4EB362D671E88004E7866 /* Build configuration list for PBXNativeTarget "TocAqui" */;
+			buildConfigurationList = 610479542D688C7E004BE669 /* Build configuration list for PBXNativeTarget "Toca-Aqui" */;
 			buildPhases = (
-				61C4EB242D671E87004E7866 /* Sources */,
-				61C4EB252D671E87004E7866 /* Frameworks */,
-				61C4EB262D671E87004E7866 /* Resources */,
+				610479422D688C7D004BE669 /* Sources */,
+				610479432D688C7D004BE669 /* Frameworks */,
+				610479442D688C7D004BE669 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				61C4EB2A2D671E87004E7866 /* TocAqui */,
+				610479482D688C7D004BE669 /* Toca-Aqui */,
 			);
-			name = TocAqui;
+			name = "Toca-Aqui";
 			packageProductDependencies = (
 			);
-			productName = TocAqui;
-			productReference = 61C4EB282D671E87004E7866 /* TocAqui.app */;
+			productName = "Toca-Aqui";
+			productReference = 610479462D688C7D004BE669 /* Toca-Aqui.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		61C4EB202D671E87004E7866 /* Project object */ = {
+		6104793E2D688C7D004BE669 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
-					61C4EB272D671E87004E7866 = {
+					610479452D688C7D004BE669 = {
 						CreatedOnToolsVersion = 16.0;
 					};
 				};
 			};
-			buildConfigurationList = 61C4EB232D671E87004E7866 /* Build configuration list for PBXProject "TocAqui" */;
+			buildConfigurationList = 610479412D688C7D004BE669 /* Build configuration list for PBXProject "Toca-Aqui" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 61C4EB1F2D671E87004E7866;
+			mainGroup = 6104793D2D688C7D004BE669;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 61C4EB292D671E87004E7866 /* Products */;
+			productRefGroup = 610479472D688C7D004BE669 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				61C4EB272D671E87004E7866 /* TocAqui */,
+				610479452D688C7D004BE669 /* Toca-Aqui */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		61C4EB262D671E87004E7866 /* Resources */ = {
+		610479442D688C7D004BE669 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -115,7 +115,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		61C4EB242D671E87004E7866 /* Sources */ = {
+		610479422D688C7D004BE669 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -125,7 +125,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		61C4EB342D671E88004E7866 /* Debug */ = {
+		610479522D688C7E004BE669 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -188,7 +188,7 @@
 			};
 			name = Debug;
 		};
-		61C4EB352D671E88004E7866 /* Release */ = {
+		610479532D688C7E004BE669 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -244,18 +244,17 @@
 			};
 			name = Release;
 		};
-		61C4EB372D671E88004E7866 /* Debug */ = {
+		610479552D688C7E004BE669 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"TocAqui/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Toca-Aqui/Preview Content\"";
 				DEVELOPMENT_TEAM = 2ZUKF3C2AM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = NSCameraUsageDescription;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -266,7 +265,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.academy.TocAqui;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.academy.Toca-Aqui";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -274,18 +273,17 @@
 			};
 			name = Debug;
 		};
-		61C4EB382D671E88004E7866 /* Release */ = {
+		610479562D688C7E004BE669 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"TocAqui/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Toca-Aqui/Preview Content\"";
 				DEVELOPMENT_TEAM = 2ZUKF3C2AM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = NSCameraUsageDescription;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -296,7 +294,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.academy.TocAqui;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.academy.Toca-Aqui";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -307,25 +305,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		61C4EB232D671E87004E7866 /* Build configuration list for PBXProject "TocAqui" */ = {
+		610479412D688C7D004BE669 /* Build configuration list for PBXProject "Toca-Aqui" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				61C4EB342D671E88004E7866 /* Debug */,
-				61C4EB352D671E88004E7866 /* Release */,
+				610479522D688C7E004BE669 /* Debug */,
+				610479532D688C7E004BE669 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		61C4EB362D671E88004E7866 /* Build configuration list for PBXNativeTarget "TocAqui" */ = {
+		610479542D688C7E004BE669 /* Build configuration list for PBXNativeTarget "Toca-Aqui" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				61C4EB372D671E88004E7866 /* Debug */,
-				61C4EB382D671E88004E7866 /* Release */,
+				610479552D688C7E004BE669 /* Debug */,
+				610479562D688C7E004BE669 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 61C4EB202D671E87004E7866 /* Project object */;
+	rootObject = 6104793E2D688C7D004BE669 /* Project object */;
 }
