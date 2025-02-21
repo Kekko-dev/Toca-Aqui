@@ -1,8 +1,8 @@
 //
 //  ContentView.swift
-//  TocAqui
+//  Toca-Aqui
 //
-//  Created by Francesco Silvestro on 20/02/25.
+//  Created by Francesco Silvestro on 21/02/25.
 //
 
 import SwiftUI
@@ -13,10 +13,9 @@ struct ContentView: View {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-            Text("Ciao mondo!")
+            Text("Hello, world!")
         }
         .padding()
-        
     }
 }
 

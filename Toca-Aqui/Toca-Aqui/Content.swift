@@ -1,3 +1,11 @@
+//
+//  Content.swift
+//  Toca-Aqui
+//
+//  Created by Francesco Silvestro on 21/02/25.
+//
+
+
 import SwiftUI
 import AVFoundation
 import Vision
@@ -19,10 +27,4 @@ struct Content_Camera_View: View {
                 .padding()
         }
     }
-}
-
-
-
-#Preview {
-    Content_Camera_View()
 }
