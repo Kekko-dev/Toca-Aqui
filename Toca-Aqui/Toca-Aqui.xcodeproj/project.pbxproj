@@ -255,7 +255,7 @@
 				DEVELOPMENT_TEAM = 2ZUKF3C2AM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to scan the text";
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app uses the camera to scan portions of text, helping to create a grammar document optimized for LIS (Italian Sign Language). Camera access is essential for this feature.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -285,7 +285,7 @@
 				DEVELOPMENT_TEAM = 2ZUKF3C2AM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to scan the text";
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app uses the camera to scan portions of text, helping to create a grammar document optimized for LIS (Italian Sign Language). Camera access is essential for this feature.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
