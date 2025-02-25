@@ -5,84 +5,71 @@
 //  Created by Francesco Silvestro on 21/02/25.
 //
 
-
 import SwiftUI
-import AVFoundation
+import VisionKit
 import Vision
 
-// 2. Implementing the view responsible for scanning the data
-struct ScannerView: UIViewControllerRepresentable {
-    
-    @Binding var recognizedText: String
-    
-    let captureSession = AVCaptureSession()
-    
-    func makeUIViewController(context: Context) -> UIViewController {
-        let viewController = UIViewController()
-        
-        guard let videoCaptureDevice = AVCaptureDevice.default(for: .video),
-              let videoInput = try? AVCaptureDeviceInput(device: videoCaptureDevice),
-              captureSession.canAddInput(videoInput) else { return viewController }
-        
-        captureSession.addInput(videoInput)
-        
-        let videoOutput = AVCaptureVideoDataOutput()
-        
-        if captureSession.canAddOutput(videoOutput) {
-            videoOutput.setSampleBufferDelegate(context.coordinator, queue: DispatchQueue(label: "videoQueue"))
-            captureSession.addOutput(videoOutput)
-        }
-        
-        let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = viewController.view.bounds
-        previewLayer.videoGravity = .resizeAspectFill
-        viewController.view.layer.addSublayer(previewLayer)
-        
-        captureSession.startRunning()
-        
-        return viewController
-    }
-    
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+struct ScanDocumentView: UIViewControllerRepresentable {
+    @Binding var recognisedText: String
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator(recognisedText: $recognisedText, parent: self)
     }
-    
-    // 3. Implementing the Coordinator class
-    class Coordinator: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
-        var parent: ScannerView
-        
-        init(_ parent: ScannerView) {
+
+    func makeUIViewController(context: Context) -> VNDocumentCameraViewController {
+        let scanner = VNDocumentCameraViewController()
+        scanner.delegate = context.coordinator
+        return scanner
+    }
+
+    func updateUIViewController(_ uiViewController: VNDocumentCameraViewController, context: Context) { }
+
+    class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
+        @Binding var recognisedText: String
+        var parent: ScanDocumentView
+
+        init(recognisedText: Binding<String>, parent: ScanDocumentView) {
+            self._recognisedText = recognisedText
             self.parent = parent
         }
-        
-        func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-            guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-            self.detectText(in: pixelBuffer)
+
+        func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
+            let extractedImages = extractImages(from: scan)
+            let processedText = recognizeText(from: extractedImages)
+            recognisedText = processedText
+            controller.dismiss(animated: true)
         }
-        
-        func detectText(in pixelBuffer: CVPixelBuffer) {
-            let request = VNRecognizeTextRequest { (request, error) in
-                guard let results = request.results as? [VNRecognizedTextObservation],
-                      let recognizedText = results.first?.topCandidates(1).first?.string else { return }
-                
-                self.parent.recognizedText = recognizedText
-                
-                // Optionally, stop scanning after first detection
-                // self.parent.captureSession.stopRunning()
+
+        private func extractImages(from scan: VNDocumentCameraScan) -> [CGImage] {
+            var images = [CGImage]()
+            for i in 0..<scan.pageCount {
+                if let cgImage = scan.imageOfPage(at: i).cgImage {
+                    images.append(cgImage)
+                }
+            }
+            return images
+        }
+
+        private func recognizeText(from images: [CGImage]) -> String {
+            var fullText = ""
+
+            let request = VNRecognizeTextRequest { request, error in
+                guard let observations = request.results as? [VNRecognizedTextObservation], error == nil else { return }
+                for observation in observations {
+                    if let topCandidate = observation.topCandidates(1).first {
+                        fullText += topCandidate.string + "\n"
+                    }
+                }
             }
             
             request.recognitionLevel = .accurate
-            
-            let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up, options: [:])
-            do {
-                try handler.perform([request])
-            } catch {
-                print("Text recognition failed: \(error)")
+            request.usesLanguageCorrection = true
+
+            for image in images {
+                let handler = VNImageRequestHandler(cgImage: image, options: [:])
+                try? handler.perform([request])
             }
+            return fullText
         }
     }
-    
 }
-
