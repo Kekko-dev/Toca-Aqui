@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct TocAquiApp: App {
+    
     var body: some Scene {
         WindowGroup {
             Content_Camera_View()
