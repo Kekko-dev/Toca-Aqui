@@ -10,7 +10,10 @@ import SwiftUI
 struct Content_Camera_View: View {
     @State private var recognisedText = "Tap the button below to scan a document."
     @State private var showScanner = false
-
+    @State private var summaryText = "Your summary will appear here."
+    // Alternatively, use one output variable for clarity:
+    @State var output: String = ""
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -23,33 +26,36 @@ struct Content_Camera_View: View {
                         .padding()
                 }
                 
+                // Display the generated summary
+                ScrollView {
+                    Text(output)
+                        .padding()
+                        .font(.system(size: 18, weight: .medium, design: .rounded))
+                        .background(Color(.secondarySystemBackground))
+                        .cornerRadius(10)
+                        .padding()
+                        .foregroundColor(.blue)
+                }
+                
                 HStack {
                     Button(action: { showScanner = true }) {
                         Label("Scan Document", systemImage: "camera.fill")
                     }
                     .buttonStyle(.borderedProminent)
-                    
-                    Button(action: saveText) {
-                        Label("Save", systemImage: "square.and.arrow.down.fill")
-                    }
-                    .buttonStyle(.bordered)
                 }
                 .padding()
             }
             .navigationTitle("Document Scanner")
             .sheet(isPresented: $showScanner) {
+                // Pass the recognisedText as a binding to update it directly from the scanner view.
                 ScanDocumentView(recognisedText: $recognisedText)
             }
-        }
-    }
-
-    func saveText() {
-        let filename = FileManager.default.temporaryDirectory.appendingPathComponent("ScannedText.txt")
-        do {
-            try recognisedText.write(to: filename, atomically: true, encoding: .utf8)
-            print("Saved to \(filename)")
-        } catch {
-            print("Failed to save text: \(error.localizedDescription)")
+            // Automatically trigger summary generation whenever recognisedText changes.
+            .onChange(of: recognisedText) { newText in
+                Task {
+                    try await generate(recognisedText: newText)
+                }
+            }
         }
     }
 }
