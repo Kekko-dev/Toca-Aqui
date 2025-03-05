@@ -9,7 +9,7 @@ import SwiftUI
 
 struct Content_Camera_View: View {
     @State private var recognisedText = "Tap the button below to scan a document."
-    @State private var showScanner = false
+    @Binding var showScanner: Bool
     @State private var summaryText = "Your summary will appear here."
     // Alternatively, use one output variable for clarity:
     @State var output: String = ""

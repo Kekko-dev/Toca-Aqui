@@ -12,7 +12,7 @@ struct TocAquiApp: App {
     
     var body: some Scene {
         WindowGroup {
-            Content_Camera_View()
+            Content_Camera_View(showScanner: .constant(true))
         }
     }
 }

@@ -13,7 +13,7 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 Spacer()
-                NavigationLink(destination: Content_Camera_View(showingSheet: $showingSheet)) {
+                NavigationLink(destination: Content_Camera_View(showScanner: $showingSheet)) {
                     Image(systemName: "camera.fill")
                         .resizable()
                         .scaledToFit()
