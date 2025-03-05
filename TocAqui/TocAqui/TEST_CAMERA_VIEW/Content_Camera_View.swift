@@ -2,27 +2,30 @@ import SwiftUI
 import AVFoundation
 import Vision
 
-// 1. Application main interface
 struct Content_Camera_View: View {
-    
+    @Binding var showingSheet: Bool
     @State private var recognizedText: String = "Scan for text"
-    
+
     var body: some View {
-        ZStack(alignment: .bottom) {	
+        ZStack(alignment: .bottom) {
             ScannerView(recognizedText: $recognizedText)
                 .edgesIgnoringSafeArea(.all)
-            
+                .onAppear {
+                    showingSheet = false
+                }
+                .onDisappear {
+                    showingSheet = true
+                }
+
             Text(recognizedText)
                 .padding()
                 .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
-                .padding()
+                .padding(.bottom, 70)
         }
     }
 }
 
-
-
 #Preview {
-    Content_Camera_View()
+    Content_Camera_View(showingSheet: .constant(true))
 }
