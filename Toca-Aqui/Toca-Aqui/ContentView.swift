@@ -7,23 +7,19 @@
 import SwiftUI
 
 struct ContentView: View {
-    
     @State private var showingSheet: Bool = true
-    
-    var body: some View {
-        VStack {
 
+    var body: some View {
+        NavigationView {
+            VStack {
                 Spacer()
-  
-                Button(action: {
-                    // Ação futura aqui
-                }) {
+                NavigationLink(destination: Content_Camera_View(showScanner: $showingSheet)) {
                     Image(systemName: "camera.fill")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 90, height: 90)
                         .padding(.all, 48)
-                        .background{
+                        .background {
                             Circle()
                                 .fill(Color.white)
                                 .shadow(radius: 10)
@@ -33,28 +29,25 @@ struct ContentView: View {
                 
                 Spacer()
                 
-
-        }
-        .frame(maxWidth: .infinity)
-        .background{
-            LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.7), Color.purple]),
-                                       startPoint: .top,
-                                       endPoint: .bottom)
-                .ignoresSafeArea(edges: .all)
-        }
-        .sheet(isPresented: $showingSheet) {
-            
-            
-            SheetView()
-                .interactiveDismissDisabled()
-                .presentationDetents([.fraction(0.1), .large])
-                .presentationBackgroundInteraction(.automatic)
-                .presentationBackground(.bar)
+            }
+            .frame(maxWidth: .infinity)
+            .background {
+                LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.7), Color.purple]),
+                               startPoint: .top,
+                               endPoint: .bottom)
+                    .ignoresSafeArea(edges: .all)
+            }
+            .sheet(isPresented: $showingSheet) {
+                SheetView()
+                    .interactiveDismissDisabled()
+                    .presentationDetents([.fraction(0.1), .large])
+                    .presentationBackgroundInteraction(.enabled)
+                    .presentationBackground(.bar)
+            }
         }
     }
 }
 
-
-#Preview{
+#Preview {
     ContentView()
 }
