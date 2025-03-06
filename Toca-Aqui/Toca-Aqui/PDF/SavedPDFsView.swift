@@ -33,7 +33,7 @@ struct SavedPDFsView: View {
                             showPDFViewer = true
                         
                             isLoading = false // Stop loading
-                        }
+                        
                     }) {
                         HStack { //Information about the file --> NEEDS TO BE UPGRADED
                             VStack(alignment: .leading) {
