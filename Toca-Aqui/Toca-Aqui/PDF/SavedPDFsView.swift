@@ -5,6 +5,7 @@
 //  Created by Francesco Silvestro on 06/03/25.
 //
 
+
 import SwiftUI
 import SwiftData
 
@@ -33,7 +34,7 @@ struct SavedPDFsView: View {
                             showPDFViewer = true
                         
                             isLoading = false // Stop loading
-                        }
+                        
                     }) {
                         HStack { //Information about the file --> NEEDS TO BE UPGRADED
                             VStack(alignment: .leading) {
@@ -52,7 +53,7 @@ struct SavedPDFsView: View {
                 .onDelete { indexSet in //Removes the selected PDF from SwiftData BUT doesn't delete it from the Storage, only from the list
                     for index in indexSet {
                         modelContext.delete(savedPDFs[index])
-                        if FileManager.default.fileExists(atPath: savedPDFs[index].filePath.path) { //THIS will delete the file from the Storage
+                        if FileManager.default.fileExists(atPath: savedPDFs[index].filePath.path) {
                             try? FileManager.default.removeItem(at: savedPDFs[index].filePath)
                         }
                     }
@@ -65,7 +66,7 @@ struct SavedPDFsView: View {
             .toolbar {
                 EditButton()
             }
-            .sheet(isPresented: $showPDFViewer) { //Will display the PDF as a Sheet --> NEEDS TO BE UPGRADED
+            .sheet(isPresented: $showPDFViewer) {
                 if let pdfURL = selectedPDF {
                     PDFViewer(pdfURL: pdfURL)
                 }
