@@ -11,9 +11,10 @@ struct Content_Camera_View: View {
     @State private var recognisedText = "Tap the button below to scan a document."
     @State private var showScanner = false
     @State private var summaryText = "Your summary will appear here."
-    // Alternatively, use one output variable for clarity:
     @State var output: String = ""
     
+    @State private var downloadProgress: Double = 0.0  //var per la progress bar
+
     var body: some View {
         NavigationView {
             VStack {
@@ -25,7 +26,7 @@ struct Content_Camera_View: View {
                         .cornerRadius(10)
                         .padding()
                 }
-                
+
                 // Display the generated summary
                 ScrollView {
                     Text(output)
@@ -36,7 +37,14 @@ struct Content_Camera_View: View {
                         .padding()
                         .foregroundColor(.blue)
                 }
-                
+
+                // Aggiungi la ProgressBar per il download
+                if downloadProgress < 1.0 {
+                    ProgressView("Downloading Model: \(Int(downloadProgress * 100))%", value: downloadProgress, total: 1.0)
+                        .progressViewStyle(LinearProgressViewStyle())
+                        .padding()
+                }
+
                 HStack {
                     Button(action: { showScanner = true }) {
                         Label("Scan Document", systemImage: "camera.fill")
@@ -47,13 +55,13 @@ struct Content_Camera_View: View {
             }
             .navigationTitle("Document Scanner")
             .sheet(isPresented: $showScanner) {
-                // Pass the recognisedText as a binding to update it directly from the scanner view.
+                
                 ScanDocumentView(recognisedText: $recognisedText)
             }
-            // Automatically trigger summary generation whenever recognisedText changes.
+           
             .onChange(of: recognisedText) { newText in
                 Task {
-                    try await generate(recognisedText: newText)
+                    try await generate(recognisedText: newText, downloadProgress: $downloadProgress) 
                 }
             }
         }

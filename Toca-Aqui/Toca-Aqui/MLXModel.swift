@@ -4,9 +4,13 @@ import MLXLMCommon
 
 
 extension Content_Camera_View {
-     func generate(recognisedText: String) async throws {
+    func generate(recognisedText: String, downloadProgress: Binding<Double>) async throws {
         let modelConfiguration = ModelRegistry.llama3_2_1B_4bit
         let modelContainer = try await LLMModelFactory.shared.loadContainer(configuration: modelConfiguration) { progress in
+           
+            DispatchQueue.main.async {
+                downloadProgress.wrappedValue = progress.fractionCompleted
+            }
             debugPrint("Downloading \(modelConfiguration.name): \(Int(progress.fractionCompleted * 100))%")
         }
 
@@ -25,7 +29,7 @@ extension Content_Camera_View {
                     return .more
                 }
         }
-        
-        
     }
 }
+
+
