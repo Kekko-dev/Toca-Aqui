@@ -24,7 +24,10 @@ struct SavedPDFsView: View {
 
     var body: some View {
         NavigationView {
+            
             List {
+                
+                
                 ForEach(savedPDFs) { pdf in
                     Button(action: {
                         
@@ -62,7 +65,7 @@ struct SavedPDFsView: View {
             .overlay(
                 isLoading ? ProgressView("Loading PDF...").padding().background(Color.white).cornerRadius(10) : nil
             )
-            .navigationTitle("Saved PDFs")
+            //.navigationTitle("Saved PDFs")
             .toolbar {
                 EditButton()
             }

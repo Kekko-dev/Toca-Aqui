@@ -33,6 +33,59 @@ class SavedPDF {
 
 
 
+
+
+
+@discardableResult
+func generatePDF(text: String) -> URL? {
+    let fileName = "TestPDF_\(UUID().uuidString).pdf"
+    let pdfURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        .appendingPathComponent(fileName)
+    
+    let format = UIGraphicsPDFRendererFormat()
+    let pageSize = CGSize(width: 612, height: 792)
+    let renderer = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: pageSize), format: format)
+    
+    do {
+        try renderer.writePDF(to: pdfURL, withActions: { pdfContext in
+            pdfContext.beginPage()
+            let textRect = CGRect(x: 20, y: 20, width: pageSize.width - 40, height: pageSize.height - 40)
+            
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .left
+            paragraphStyle.lineBreakMode = .byWordWrapping
+            
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 16),
+                .paragraphStyle: paragraphStyle
+            ]
+            
+            let attributedText = NSAttributedString(string: text, attributes: attributes)
+            attributedText.draw(in: textRect)
+        })
+        print("✅ PDF generated at: \(pdfURL.path)")
+        return pdfURL
+    } catch {
+        print("❌ Failed to generate PDF: \(error)")
+        return nil
+    }
+}
+
+// Inserts the PDF metadata into SwiftData.
+func storePDF(url: URL, context: ModelContext) {
+    let fileName = url.lastPathComponent
+    let savedPDF = SavedPDF(fileName: fileName, filePath: url)
+    context.insert(savedPDF)
+    print("PDF saved in database: \(fileName)")
+}
+
+
+
+
+
+//TUTORIAL
+
+/*
 func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext → The SwiftData database context, used to save PDF metadata.
     
     let fileName = "ScannedText_\(UUID().uuidString).pdf" // <-- Generated from the app, NEEDS TO BE CHANGED!!
@@ -481,3 +534,5 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext �
         print("❌ Failed to create PDF: \(error)")
     }
 }
+*/
+
