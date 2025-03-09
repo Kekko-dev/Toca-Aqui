@@ -92,44 +92,44 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
     
     
     let pdfURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(fileName)
-/*
- 
- 1) FileManager = FileManager is a built-in class in Swift that manages the file system, .default is a shared instance of FileManager
- 
- 2) .urls(for: , in: ) = This retrieves an array of URLs for the Documents directory in the app‚Äôs sandbox,
-                        
-                        -->  .documentDirectory = Refers to the Documents Folder inside the app's private storage
-                        --> .userDomainMask = Refers to the user's personal app space.
- 
-    Example:
-            ["file:///var/mobile/Containers/Data/Application/ABCD1234/Documents/"]
- 
-    User Domain: /var/mobile/Containers/Data/Application/ABCD1234/, referes to the ENTIRE storage of the app, it's PRIVATE to the app
-    
- Document Directory: /Documents/ , the specific location where to save files
- 
- This structure ensures that the PDF files are saved inside the app and doesn't interfere with the system files
- 
- 
- 3) .first! = The function returns an array of URLs (even though it usually contains only one).
-    The ! (force unwrap) assumes that there is always a valid directory returned.
- 
- 
- 4) .appendingPathComponent(fileName) = This adds the file name (e.g., "ScannedText_123.pdf") to the directory path.
- It ensures that the final URL points to the actual PDF file inside the Documents folder.
- 
-    Example:
- file:///var/mobile/Containers/Data/Application/ABCD1234/Documents/ScannedText_123.pdf
- 
- */
-    
-    
+    /*
+     
+     1) FileManager = FileManager is a built-in class in Swift that manages the file system, .default is a shared instance of FileManager
+     
+     2) .urls(for: , in: ) = This retrieves an array of URLs for the Documents directory in the app‚Äôs sandbox,
+     
+     -->  .documentDirectory = Refers to the Documents Folder inside the app's private storage
+     --> .userDomainMask = Refers to the user's personal app space.
+     
+     Example:
+     ["file:///var/mobile/Containers/Data/Application/ABCD1234/Documents/"]
+     
+     User Domain: /var/mobile/Containers/Data/Application/ABCD1234/, referes to the ENTIRE storage of the app, it's PRIVATE to the app
+     
+     Document Directory: /Documents/ , the specific location where to save files
+     
+     This structure ensures that the PDF files are saved inside the app and doesn't interfere with the system files
+     
+     
+     3) .first! = The function returns an array of URLs (even though it usually contains only one).
+     The ! (force unwrap) assumes that there is always a valid directory returned.
+     
+     
+     4) .appendingPathComponent(fileName) = This adds the file name (e.g., "ScannedText_123.pdf") to the directory path.
+     It ensures that the final URL points to the actual PDF file inside the Documents folder.
+     
+     Example:
+     file:///var/mobile/Containers/Data/Application/ABCD1234/Documents/ScannedText_123.pdf
+     
+     */
     
     
-
+    
+    
+    
     
     let format = UIGraphicsPDFRendererFormat()
-
+    
     /*
      Creates a PDF format object that defines settings for how the PDF will be rendered.
      
@@ -142,7 +142,7 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
      format.documentInfo = [
      kCGPDFContextTitle as String: "My Custom PDF",
      kCGPDFContextAuthor as String: "Francesco Silvestro"
- ]
+     ]
      
      */
     
@@ -170,17 +170,17 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
     
     
     let renderer = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: pageSize), format: format)
-
+    
     /*
      
      UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: pageSize), format: format)
-        
-     1) bounds: CGRect(origin: .zero, size: pageSize) ‚Üí Defines the dimensions of each page.
-        
-     2) format: format ‚Üí Uses the PDF format settings from before.
-
      
-    It defines the paper size and it prepares the environment for rendering text and images.
+     1) bounds: CGRect(origin: .zero, size: pageSize) ‚Üí Defines the dimensions of each page.
+     
+     2) format: format ‚Üí Uses the PDF format settings from before.
+     
+     
+     It defines the paper size and it prepares the environment for rendering text and images.
      
      
      
@@ -210,7 +210,7 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
              */
             
             
-    
+            
             
             let textRect = CGRect(x: 20, y: 20, width: pageSize.width - 40, height: pageSize.height - 40)
             
@@ -272,9 +272,9 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
              
              Determines how text wraps when it reaches the end of the line.
              
-            --> .lineBreakMode controls how text breaks when it doesn‚Äôt fit inside the text box.
+             --> .lineBreakMode controls how text breaks when it doesn‚Äôt fit inside the text box.
              
-            --> .byWordWrapping ensures text wraps at word boundaries (doesn‚Äôt cut words in half).
+             --> .byWordWrapping ensures text wraps at word boundaries (doesn‚Äôt cut words in half).
              
              OTHER Possible values:
              
@@ -290,7 +290,7 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
              .byTruncatingMiddle    Cuts text in the middle with ....
              
              .byTruncatingHead    Cuts text at the beginning with ....
-
+             
              
              
              
@@ -305,7 +305,7 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
              */
             
             
-
+            
             let attributes: [NSAttributedString.Key: Any] = [
                 .font: UIFont.systemFont(ofSize: 16),
                 .paragraphStyle: paragraphStyle
@@ -320,14 +320,14 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
              The dictionary keys are NSAttributedString.Key, which defines how the text looks, the values control the font, alignment, spacing, etc.
              
              
-           
-           -->  .font    Sets the font and size (e.g., UIFont.systemFont(ofSize: 16))
              
-          -->   .paragraphStyle    Applies alignment and line breaking rules (defined before).
+             -->  .font    Sets the font and size (e.g., UIFont.systemFont(ofSize: 16))
+             
+             -->   .paragraphStyle    Applies alignment and line breaking rules (defined before).
              
              
              */
-
+            
             
             
             let attributedText = NSAttributedString(string: text, attributes: attributes)
@@ -341,7 +341,7 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
              
              Without NSAttributedString, text would be drawn in default settings (basic, unstyled).
              
-
+             
              */
             
             
@@ -350,10 +350,10 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
             /*
              
              Stores the formatted text (NSAttributedString) in an object that can be laid out and drawn.
-            
+             
              --> NSTextStorage is a container for styled text that can dynamically update as the layout changes.
-                 We are passing the attributedText created before
-                
+             We are passing the attributedText created before
+             
              It works with NSLayoutManager to handle text rendering and pagination. --> Next line of code
              
              
@@ -363,9 +363,9 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
             /*
              
              Manages the layout of text characters (glyphs) across lines and pages.
-            
+             
              It takes the text from NSTextStorage and flows it through the text container.
-                
+             
              It ensures proper word wrapping and line breaking.
              
              */
@@ -378,25 +378,25 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
             /*
              
              Defines the area where text is displayed.
-            
+             
              1) NSTextContainer(size: textRect.size) ‚Üí Specifies the width and height available for text.
-                
+             
              2) textContainer.lineBreakMode = .byWordWrapping ‚Üí Ensures words don‚Äôt get cut off.
-            
+             
              Connects everything together:
-            
+             
              3) layoutManager.addTextContainer(textContainer) ‚Üí Adds the text container to the layout manager.
              
              4) textStorage.addLayoutManager(layoutManager) ‚Üí Links text storage with the layout manager.
-
-            
+             
+             
              RECAP:
              
-                1) NSTextStorage holds the text.
-                 
-                2) NSLayoutManager calculates how to fit text into available space.
-                 
-                3) NSTextContainer defines the physical space where text can be drawn.
+             1) NSTextStorage holds the text.
+             
+             2) NSLayoutManager calculates how to fit text into available space.
+             
+             3) NSTextContainer defines the physical space where text can be drawn.
              
              
              
@@ -424,7 +424,7 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
                 /*
                  
                  Keeps running as long as there is more text to process.
-                
+                 
                  1) textStorage.length ‚Üí Total number of characters in the text.
                  
                  2) range.location ‚Üí The current character position being drawn.
@@ -436,11 +436,11 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
                 /*
                  
                  Calculates the height of the text that fits in the text container.
-                    
+                 
                  1) layoutManager.usedRect(for: textContainer).height tells us how much space the text is taking.
-                     This helps determine if more text needs to be drawn on another page.
-
-                   If the text height exceeds the available space, we start a new page.
+                 This helps determine if more text needs to be drawn on another page.
+                 
+                 If the text height exceeds the available space, we start a new page.
                  
                  
                  */
@@ -451,11 +451,11 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
                 
                 /*
                  Checks if we are on a new page and starts a new one if necessary.
-                    
+                 
                  First page doesn‚Äôt need beginPage() because it‚Äôs already open.
-                    
+                 
                  Any subsequent page must call context.beginPage() to create a new blank page.
-
+                 
                  
                  */
                 
@@ -473,11 +473,11 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
                 /*
                  
                  Draws the current portion of text inside the PDF.
-                    
+                 
                  1) layoutManager.drawGlyphs(...) renders the text on the page.
-                    
+                 
                  2) forGlyphRange: range ‚Üí Specifies which part of the text to draw.
-                    
+                 
                  3) at: drawingPoint ‚Üí Places the text at the correct position.
                  
                  */
@@ -487,9 +487,9 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
                 /*
                  
                  Moves to the next portion of text that hasn‚Äôt been drawn.
-                
+                 
                  1) range.length holds the number of characters drawn on this page.
-                
+                 
                  2) range.location moves forward to the next part of the text.
                  
                  
@@ -500,7 +500,7 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
                 /*
                  
                  Calculates how much text is left to draw.
-                
+                 
                  Subtracts the text we already processed from the total text length.
                  
                  This ensures that we don't re-write the text
@@ -519,17 +519,17 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext ‚Ü
                  */
             }
         })
-
+        
         // Save to SwiftData
         let newPDF = SavedPDF(fileName: fileName, filePath: pdfURL) //Creates the PDF Object
         context.insert(newPDF) //Insert it into SwiftData database
         
         //With the previous steps we have created the pdf, now we are creating a SavePDF object to pass inside the swiftData database
- 
-
+        
+        
         print("‚úÖ PDF saved successfully at: \(pdfURL.path)")
         print("‚úÖ PDF metadata saved in SwiftData: \(newPDF.fileName)")
-
+        
     } catch {
         print("‚ùå Failed to create PDF: \(error)")
     }
