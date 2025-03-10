@@ -141,6 +141,10 @@ struct Content_Camera_View: View {
     private let minHeight: CGFloat = 100
     private let bottomMargin: CGFloat = 30
     
+    
+    @State var structuredText: [(text: String, isTitle: Bool)] = []
+    
+    
     @Environment(\.modelContext) private var modelContext
     
     var body: some View {
@@ -166,8 +170,9 @@ struct Content_Camera_View: View {
                 .padding()
                 .navigationTitle("Document Scanner")
                 .sheet(isPresented: $showScanner) {
-                    ScanDocumentView(recognisedText: $recognisedText)
+                    ScanDocumentView(recognisedText: $recognisedText, structuredText: $structuredText)
                 }
+                /*
                 .onChange(of: recognisedText) { _, newValue in
                     guard newValue != "Tap the button to scan a document." else { return }
                     Task {
@@ -178,6 +183,20 @@ struct Content_Camera_View: View {
                         print("Model output: \(output)")
                         // Generate PDF from the model-generated summary.
                         if let pdfURL = generatePDF(text: output) {
+                            try await Task.sleep(nanoseconds: 2_500_000_000)
+                            pdfFile = PDFFile(url: pdfURL)
+                        }
+                    }
+                }*/
+                .onChange(of: recognisedText) { _, newValue in
+                    guard newValue != "Tap the button to scan a document." else { return }
+                    Task {
+                        // Call your summarization model function using the structured text.
+                        try await generate(structuredText: structuredText, downloadProgress: .constant(1.0))
+                        try await Task.sleep(nanoseconds: 1_000_000_000)
+                        print("Model output: \(output)")
+                        // Generate a PDF using the structured text (which preserves titles and paragraphs).
+                        if let pdfURL = generateStructuredPDF(textSections: structuredText) {
                             try await Task.sleep(nanoseconds: 2_500_000_000)
                             pdfFile = PDFFile(url: pdfURL)
                         }
