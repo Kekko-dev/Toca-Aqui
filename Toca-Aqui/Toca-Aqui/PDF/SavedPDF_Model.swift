@@ -72,13 +72,32 @@ func generatePDF(text: String) -> URL? {
 }
 
 // Inserts the PDF metadata into SwiftData.
-func storePDF(url: URL, context: ModelContext) {
-    let fileName = url.lastPathComponent
-    let savedPDF = SavedPDF(fileName: fileName, filePath: url)
-    context.insert(savedPDF)
-    print("PDF saved in database: \(fileName)")
+func storePDF(url: URL, fileName: String, context: ModelContext) {
+    // Create a sanitized file name
+    let trimmedName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
+    let newFileName = trimmedName.isEmpty ? url.lastPathComponent : trimmedName
+    
+    // Get the documents directory
+    guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        print("Documents directory not found")
+        return
+    }
+    
+    // Create a new file URL with the custom name
+    let newURL = documentsDirectory.appendingPathComponent(newFileName)
+    
+    do {
+        // Move the file to the new URL, effectively renaming it.
+        try FileManager.default.moveItem(at: url, to: newURL)
+        
+        // Create and store your PDF model with the new URL and custom name.
+        let savedPDF = SavedPDF(fileName: newFileName, filePath: newURL)
+        context.insert(savedPDF)
+        print("PDF saved with custom name: \(newFileName)")
+    } catch {
+        print("Error renaming PDF: \(error)")
+    }
 }
-
 
 
 

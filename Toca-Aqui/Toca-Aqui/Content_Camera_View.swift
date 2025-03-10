@@ -27,6 +27,8 @@ struct Content_Camera_View: View {
     private let minHeight: CGFloat = 100
     private let bottomMargin: CGFloat = 30
     
+    @State var documentName: String = ""
+    
     
     @State var structuredText: [(text: String, isTitle: Bool)] = []
     
@@ -74,9 +76,9 @@ struct Content_Camera_View: View {
                     }
                 }
                 .sheet(item: $pdfFile) { file in
-                    PreviewAndSavePDFView(fileURL: file.url, onSave: {
-                        storePDF(url: file.url, context: modelContext)
-                    })
+                    PreviewAndSavePDFView(fileURL: file.url, onSave: {_ in 
+                        storePDF(url: file.url,fileName: documentName, context: modelContext)
+                    }, documentName: $documentName)
                 }
             }
             // Persistent bottom sheet showing the saved PDFs.

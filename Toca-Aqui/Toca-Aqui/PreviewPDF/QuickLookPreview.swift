@@ -1,10 +1,3 @@
-//
-//  QuickLookPreview.swift
-//  Toca-Aqui
-//
-//  Created by Francesco Silvestro on 07/03/25.
-//
-
 import SwiftUI
 import UIKit
 import QuickLook
@@ -48,37 +41,37 @@ struct QuickLookPreview: UIViewControllerRepresentable {
     }
 }
 
-// Preview view with a Save PDF button.
+// Preview view with an embedded text field for the document name.
 struct PreviewAndSavePDFView: View {
     let fileURL: URL
-    let onSave: () -> Void
+    /// onSave now accepts the chosen document name.
+    let onSave: (String) -> Void
     @Environment(\.dismiss) var dismiss
-
+    
+    // State to hold the document name.
+    @Binding var documentName: String
+    
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
+                // TextField to enter the document name.
+                TextField("Enter document name", text: $documentName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+                
+                // The PDF preview.
                 QuickLookPreview(fileURL: fileURL)
                     .edgesIgnoringSafeArea(.all)
-                Button(action: {
-                    onSave()
+            }
+            .navigationBarItems(
+                leading: Button("Cancel") { dismiss() },
+                trailing: Button("Save") {
+                    onSave(documentName)
                     dismiss()
-                }) {
-                    Text("Save PDF")
-                        .bold()
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .padding()
                 }
-            }
-            .navigationTitle("PDF Preview")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-            }
+                // Disable Save if the name is empty or only whitespace.
+                .disabled(documentName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            )
         }
     }
 }
