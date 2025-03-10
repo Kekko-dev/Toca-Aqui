@@ -47,13 +47,13 @@ struct PDFViewer: View {  //VIEW For displaying the file name of the PDF
 
     var body: some View {
         VStack {
-            Text("Opening: \(pdfURL.lastPathComponent)")
+            Text("\(pdfURL.lastPathComponent)")
                 .font(.headline)
                 .padding()
             
             PDFKitView(pdfURL: pdfURL)
         }
-        .navigationTitle("PDF Viewer")
+        
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             print(" Opening PDF: \(pdfURL.path)")
