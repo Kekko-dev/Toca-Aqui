@@ -39,6 +39,7 @@ extension Content_Camera_View {
             DispatchQueue.main.async {
                 downloadProgress.wrappedValue = progress.fractionCompleted
             }
+            debugPrint("Downloading \(modelConfiguration.name): \(Int(progress.fractionCompleted * 100))%")
         }
         
         var processedText = ""
