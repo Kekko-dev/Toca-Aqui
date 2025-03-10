@@ -536,3 +536,195 @@ func saveAsPDF(text: String, context: ModelContext) { //context: ModelContext �
 }
 */
 
+
+
+
+import UIKit
+import CoreText
+
+/// Classifies text as a *Title* or *Body* based on heuristics
+func classifyText(_ text: String) -> NSAttributedString {
+    let paragraphStyle = NSMutableParagraphStyle()
+    paragraphStyle.alignment = .left
+    paragraphStyle.lineBreakMode = .byWordWrapping
+
+    let attributes: [NSAttributedString.Key: Any]
+
+    if isLikelyTitle(text) {
+        attributes = [
+            .font: UIFont.boldSystemFont(ofSize: 22), // Title formatting
+            .paragraphStyle: paragraphStyle
+        ]
+    } else {
+        attributes = [
+            .font: UIFont.systemFont(ofSize: 16), // Body text formatting
+            .paragraphStyle: paragraphStyle
+        ]
+    }
+    
+    return NSAttributedString(string: text, attributes: attributes)
+}
+
+/// Determines if the text is likely a title
+func isLikelyTitle(_ text: String) -> Bool {
+    return text.count < 50 && text == text.uppercased()
+}
+
+
+/// Generates a PDF with formatted text (Titles & Body text)
+func generateStyledPDF(text: String) -> URL? {
+    let fileName = "Styled_Scanned_Document_\(UUID().uuidString).pdf"
+    let pdfURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        .appendingPathComponent(fileName)
+
+    let format = UIGraphicsPDFRendererFormat()
+    let pageSize = CGSize(width: 612, height: 792) // Standard A4 dimensions
+    let renderer = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: pageSize), format: format)
+
+    do {
+        try renderer.writePDF(to: pdfURL, withActions: { pdfContext in
+            pdfContext.beginPage()
+            
+            let textRect = CGRect(x: 20, y: 20, width: pageSize.width - 40, height: pageSize.height - 40)
+            
+            let formattedText = classifyText(text) // Apply formatting
+            formattedText.draw(in: textRect)
+        })
+        print("✅ Styled PDF generated at: \(pdfURL.path)")
+        return pdfURL
+    } catch {
+        print("❌ Failed to generate PDF: \(error)")
+        return nil
+    }
+}
+
+
+func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)]) -> URL? {
+    let fileName = "Structured_Scanned_Document_\(UUID().uuidString).pdf"
+    let pdfURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                        .appendingPathComponent(fileName)
+    
+    let format = UIGraphicsPDFRendererFormat()
+    let pageSize = CGSize(width: 612, height: 792)  // Standard A4 dimensions
+    let renderer = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: pageSize), format: format)
+    
+    do {
+        try renderer.writePDF(to: pdfURL, withActions: { pdfContext in
+            pdfContext.beginPage()
+            
+            var yOffset: CGFloat = 20
+            let xOffset: CGFloat = 20
+            let maxWidth: CGFloat = pageSize.width - 40
+            let spacingAfterBlock: CGFloat = 10
+            let spacingBetweenTitleAndBody: CGFloat = 5
+            
+            var i = 0
+            while i < textSections.count {
+                // When a title is immediately followed by a body, combine them.
+                if i < textSections.count - 1 && textSections[i].isTitle && !textSections[i+1].isTitle {
+                    let combinedAttributedString = NSMutableAttributedString()
+                    
+                    // Title attributes.
+                    let titleAttributes: [NSAttributedString.Key: Any] = [
+                        .font: UIFont.boldSystemFont(ofSize: 22),
+                        .paragraphStyle: {
+                            let ps = NSMutableParagraphStyle()
+                            ps.alignment = .left
+                            ps.lineBreakMode = .byWordWrapping
+                            return ps
+                        }()
+                    ]
+                    // Body attributes.
+                    let bodyAttributes: [NSAttributedString.Key: Any] = [
+                        .font: UIFont.systemFont(ofSize: 16),
+                        .paragraphStyle: {
+                            let ps = NSMutableParagraphStyle()
+                            ps.alignment = .left
+                            ps.lineBreakMode = .byWordWrapping
+                            return ps
+                        }()
+                    ]
+                    
+                    let titleText = textSections[i].text.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let bodyText = textSections[i+1].text.trimmingCharacters(in: .whitespacesAndNewlines)
+                    
+                    let titleAttrStr = NSAttributedString(string: titleText + "\n", attributes: titleAttributes)
+                    let bodyAttrStr = NSAttributedString(string: bodyText, attributes: bodyAttributes)
+                    
+                    combinedAttributedString.append(titleAttrStr)
+                    combinedAttributedString.append(bodyAttrStr)
+                    
+                    let constraintRect = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
+                    let combinedBounding = combinedAttributedString.boundingRect(with: constraintRect,
+                                                                                 options: .usesLineFragmentOrigin,
+                                                                                 context: nil)
+                    let combinedHeight = ceil(combinedBounding.height)
+                    
+                    // If there isn't enough space in the current page, start a new page.
+                    if yOffset + combinedHeight > pageSize.height - 20 {
+                        pdfContext.beginPage()
+                        yOffset = 20
+                    }
+                    
+                    // If the combined block is too tall to fit even on an empty page,
+                    // scale it down to fit.
+                    if combinedHeight > pageSize.height - 40 {
+                        let availableHeight = pageSize.height - 40
+                        let scaleFactor = availableHeight / combinedHeight
+                        pdfContext.cgContext.saveGState()
+                        // Translate to drawing position.
+                        pdfContext.cgContext.translateBy(x: xOffset, y: yOffset)
+                        pdfContext.cgContext.scaleBy(x: scaleFactor, y: scaleFactor)
+                        // Draw at (0,0) since we've translated.
+                        combinedAttributedString.draw(in: CGRect(x: 0,
+                                                                   y: 0,
+                                                                   width: maxWidth / scaleFactor,
+                                                                   height: combinedHeight))
+                        pdfContext.cgContext.restoreGState()
+                        yOffset += availableHeight + spacingAfterBlock
+                    } else {
+                        let drawRect = CGRect(x: xOffset, y: yOffset, width: maxWidth, height: combinedHeight)
+                        combinedAttributedString.draw(in: drawRect)
+                        yOffset += combinedHeight + spacingAfterBlock
+                    }
+                    
+                    i += 2  // Skip the next block (already merged).
+                } else {
+                    // Process single block.
+                    let block = textSections[i]
+                    let attributes: [NSAttributedString.Key: Any] = [
+                        .font: block.isTitle ? UIFont.boldSystemFont(ofSize: 22) : UIFont.systemFont(ofSize: 16),
+                        .paragraphStyle: {
+                            let ps = NSMutableParagraphStyle()
+                            ps.alignment = .left
+                            ps.lineBreakMode = .byWordWrapping
+                            return ps
+                        }()
+                    ]
+                    
+                    let attrStr = NSAttributedString(string: block.text, attributes: attributes)
+                    let constraintRect = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
+                    let bounding = attrStr.boundingRect(with: constraintRect,
+                                                        options: .usesLineFragmentOrigin,
+                                                        context: nil)
+                    let requiredHeight = ceil(bounding.height)
+                    
+                    if yOffset + requiredHeight + spacingAfterBlock > pageSize.height - 20 {
+                        pdfContext.beginPage()
+                        yOffset = 20
+                    }
+                    
+                    let textRect = CGRect(x: xOffset, y: yOffset, width: maxWidth, height: requiredHeight)
+                    attrStr.draw(in: textRect)
+                    yOffset += requiredHeight + spacingAfterBlock
+                    i += 1
+                }
+            }
+        })
+        print("✅ Structured PDF generated at: \(pdfURL.path)")
+        return pdfURL
+    } catch {
+        print("❌ Failed to generate PDF: \(error)")
+        return nil
+    }
+}

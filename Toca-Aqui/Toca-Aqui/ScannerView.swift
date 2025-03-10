@@ -9,7 +9,7 @@ import SwiftUI
 import VisionKit
 import Vision
 
-
+/*
 struct ScanDocumentView: UIViewControllerRepresentable { // UIViewControllerRepresentable wraps UIkit view controller, the camera
     @Binding var recognisedText: String  //Binding connects the state of this view with a state of an external view
     
@@ -95,7 +95,7 @@ VNDocumentCameraViewControllerDelegate. This delegate protocol allows the coordi
             return images
         }
 
-        
+   /*
     //This method takes an array of CGImage and processes them using the Vision framework’s text recognition capabilities
         private func recognizeText(from images: [CGImage]) -> String {
             
@@ -153,8 +153,151 @@ Creates an image request handler for the current image. The empty options dictio
             }
             return fullText
             
+        }*/
+        private func recognizeText(from images: [CGImage]) -> [(text: String, isTitle: Bool)] {
+            var structuredText: [(String, Bool)] = [] // Stores text and its type (Title/Body)
+
+            let request = VNRecognizeTextRequest { request, error in
+                guard let observations = request.results as? [VNRecognizedTextObservation], error == nil else { return }
+
+                for observation in observations {
+                    if let topCandidate = observation.topCandidates(1).first {
+                        let isTitle = isLikelyTitle(topCandidate.string) // Detect if this is a title
+                        structuredText.append((topCandidate.string, isTitle))
+                    }
+                }
+            }
+
+            request.recognitionLevel = .accurate
+            request.usesLanguageCorrection = true
+
+            for image in images {
+                let handler = VNImageRequestHandler(cgImage: image, options: [:])
+                try? handler.perform([request])
+            }
+
+            return structuredText
         }
-        
     }
     
 }
+*/
+
+
+import SwiftUI
+import Vision
+
+struct ScanDocumentView: UIViewControllerRepresentable {
+    @Binding var recognisedText: String
+    @Binding var structuredText: [(text: String, isTitle: Bool)]
+    
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(recognisedText: $recognisedText, structuredText: $structuredText, parent: self)
+    }
+    
+    func makeUIViewController(context: Context) -> VNDocumentCameraViewController {
+        let scanner = VNDocumentCameraViewController()
+        scanner.delegate = context.coordinator
+        return scanner
+    }
+    
+    func updateUIViewController(_ uiViewController: VNDocumentCameraViewController, context: Context) {
+        // No update required.
+    }
+    
+    class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
+        @Binding var recognisedText: String
+        @Binding var structuredText: [(text: String, isTitle: Bool)]
+        var parent: ScanDocumentView
+        
+        init(recognisedText: Binding<String>, structuredText: Binding<[(text: String, isTitle: Bool)]>, parent: ScanDocumentView) {
+            self._recognisedText = recognisedText
+            self._structuredText = structuredText
+            self.parent = parent
+        }
+        
+        func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
+            let images = extractImages(from: scan)
+            let structured = recognizeStructuredText(from: images)
+            self.structuredText = structured
+            // Also update the plain text by joining all text blocks.
+            self.recognisedText = structured.map { $0.text }.joined(separator: "\n")
+            controller.dismiss(animated: true)
+        }
+        
+        // Extracts CGImages from the scanned document.
+        private func extractImages(from scan: VNDocumentCameraScan) -> [CGImage] {
+            var images = [CGImage]()
+            for i in 0..<scan.pageCount {
+                if let cgImage = scan.imageOfPage(at: i).cgImage {
+                    images.append(cgImage)
+                }
+            }
+            return images
+        }
+        
+        // Recognizes text from each image, groups consecutive non-title observations into paragraphs,
+        // and returns an array of (text, isTitle) tuples.
+        private func recognizeStructuredText(from images: [CGImage]) -> [(text: String, isTitle: Bool)] {
+            var globalResult: [(text: String, isTitle: Bool)] = []
+            
+            // Process each image individually.
+            for image in images {
+                var observationsArray: [(String, Bool)] = []
+                
+                let request = VNRecognizeTextRequest { request, error in
+                    guard let observations = request.results as? [VNRecognizedTextObservation], error == nil else { return }
+                    for observation in observations {
+                        if let topCandidate = observation.topCandidates(1).first {
+                            let text = topCandidate.string
+                            let titleFlag = self.isLikelyTitle(text)
+                            observationsArray.append((text, titleFlag))
+                        }
+                    }
+                }
+                
+                request.recognitionLevel = VNRequestTextRecognitionLevel.accurate
+                request.usesLanguageCorrection = true
+                
+                let handler = VNImageRequestHandler(cgImage: image, options: [:])
+                try? handler.perform([request])
+                
+                // Group consecutive non-title observations into a paragraph.
+                var groupedResult: [(text: String, isTitle: Bool)] = []
+                var currentParagraph = ""
+                
+                for (text, isTitle) in observationsArray {
+                    if isTitle {
+                        // If there is accumulated non-title text, add it first.
+                        if !currentParagraph.isEmpty {
+                            groupedResult.append((currentParagraph, false))
+                            currentParagraph = ""
+                        }
+                        groupedResult.append((text, true))
+                    } else {
+                        if currentParagraph.isEmpty {
+                            currentParagraph = text
+                        } else {
+                            currentParagraph += " " + text
+                        }
+                    }
+                }
+                if !currentParagraph.isEmpty {
+                    groupedResult.append((currentParagraph, false))
+                }
+                
+                globalResult.append(contentsOf: groupedResult)
+            }
+            return globalResult
+        }
+        
+        // Helper function to decide if a text string is likely a title.
+        private func isLikelyTitle(_ text: String) -> Bool {
+            return text.count < 50 && text == text.uppercased()
+        }
+        
+        // Generates a structured PDF from the text sections.
+      
+        }
+    }
+

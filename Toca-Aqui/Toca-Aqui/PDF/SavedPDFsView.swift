@@ -25,7 +25,7 @@ struct SavedPDFsView: View {
     var body: some View {
         NavigationView {
             
-            List {
+           List {
                 
                 
                 ForEach(savedPDFs) { pdf in
