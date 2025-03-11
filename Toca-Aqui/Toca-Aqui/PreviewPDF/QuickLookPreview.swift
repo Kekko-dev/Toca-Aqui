@@ -44,34 +44,38 @@ struct QuickLookPreview: UIViewControllerRepresentable {
 // Preview view with an embedded text field for the document name.
 struct PreviewAndSavePDFView: View {
     let fileURL: URL
-    /// onSave now accepts the chosen document name.
     let onSave: (String) -> Void
     @Environment(\.dismiss) var dismiss
-    
-    // State to hold the document name.
     @Binding var documentName: String
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // TextField to enter the document name.
-                TextField("Enter document name", text: $documentName)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-                
-                // The PDF preview.
-                QuickLookPreview(fileURL: fileURL)
-                    .edgesIgnoringSafeArea(.all)
-            }
-            .navigationBarItems(
-                leading: Button("Cancel") { dismiss() },
-                trailing: Button("Save") {
-                    onSave(documentName)
-                    dismiss()
+            QuickLookPreview(fileURL: fileURL)
+                .edgesIgnoringSafeArea(.all)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    // Place the text field in the middle of the navigation bar.
+                    ToolbarItem(placement: .principal) {
+                        TextField("Enter document name", text: $documentName)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(maxWidth: 300)
+                    }
+                    // Cancel button on the left.
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button("Cancel") {
+                            dismiss()
+                        }
+                    }
+                    // Save button on the right.
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Save") {
+                            onSave(documentName)
+                            dismiss()
+                        }
+                        .disabled(documentName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
                 }
-                // Disable Save if the name is empty or only whitespace.
-                .disabled(documentName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            )
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }

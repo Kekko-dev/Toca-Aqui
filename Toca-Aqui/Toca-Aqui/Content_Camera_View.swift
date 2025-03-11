@@ -99,9 +99,6 @@ struct Content_Camera_View: View {
                         Image(systemName: "text.document.fill")
                             .padding(.trailing, 30)
                     }
-                    Divider()
-                        .background(Color.white.opacity(0.2))
-                        .padding(.horizontal, 20)
                     
                     // Show the list of saved PDFs.
                     SavedPDFsView()
