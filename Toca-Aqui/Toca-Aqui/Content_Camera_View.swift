@@ -134,21 +134,3 @@ struct Content_Camera_View: View {
 }
 
 
-
-#if DEBUG
-struct Content_Camera_View_Previews: PreviewProvider {
-    static var previews: some View {
-        // Create an in-memory SwiftData container for the SavedPDF model.
-        let container = try! ModelContainer(for: SavedPDF.self)
-        let context = container.mainContext
-        
-        // Create a dummy SavedPDF instance and insert it into the container.
-        let dummyPDF = SavedPDF(fileName: "Sample PDF", filePath: URL(fileURLWithPath: "/sample/path/sample.pdf"))
-        context.insert(dummyPDF)
-        try? context.save()
-        
-        return Content_Camera_View()
-            .modelContainer(container)
-    }
-}
-#endif
