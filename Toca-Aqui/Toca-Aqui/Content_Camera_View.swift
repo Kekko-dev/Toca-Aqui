@@ -33,6 +33,9 @@ struct Content_Camera_View: View {
     @State var structuredText: [(text: String, isTitle: Bool)] = []
     
     
+    @State var downloadProgress: Double = 0
+    
+    
     @Environment(\.modelContext) private var modelContext
     
     var body: some View {
@@ -50,7 +53,7 @@ struct Content_Camera_View: View {
                             showScanner = true
                         }) {
                             Image(systemName: "camera.fill")
-                                
+                            
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 90, height: 90)
@@ -63,8 +66,20 @@ struct Content_Camera_View: View {
                                 .foregroundStyle(.purple)
                             
                         }
+                        
+                        if downloadProgress > 0.0 && downloadProgress < 1.0 {
+                            VStack {
+                                Text("Downloading model...")
+                                    .font(.caption)
+                                ProgressView(value: downloadProgress, total: 1.0)
+                                    .progressViewStyle(LinearProgressViewStyle())
+                                    .padding(.horizontal, 40)
+                            }
+                        }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    
+                    
                     
                     
                     .sheet(isPresented: $showScanner) {
@@ -128,7 +143,7 @@ struct Content_Camera_View: View {
             }
             .foregroundStyle(.purple)
         }
-       
+        
         
     }
 }
