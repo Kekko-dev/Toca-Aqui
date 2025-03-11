@@ -75,7 +75,7 @@ struct DraggableBottomSheet<Content: View>: View {
             RoundedRectangle(cornerRadius: 48, style: .continuous)
                 .fill(Color(UIColor.secondarySystemBackground))
         )
-        .shadow(radius: 5)
+        //.shadow(radius: 5)
         // The sheet's vertical offset: currentOffset plus a bottom margin.
         .offset(y: currentOffset + bottomMargin)
         .gesture(dragGesture)
