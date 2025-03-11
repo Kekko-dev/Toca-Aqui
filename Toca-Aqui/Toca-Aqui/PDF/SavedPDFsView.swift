@@ -71,7 +71,8 @@ struct SavedPDFsView: View {
             //.frame(width: UIScreen.main.bounds.width, height: .infinity, alignment: .top)
             .background(
                 Rectangle()
-                    .fill(Color(UIColor.secondarySystemBackground))
+                    .fill(Color(UIColor.purple))
+                    .opacity(0.3)
                     .ignoresSafeArea()
             )
             .sheet(isPresented: $showPDFViewer) {
@@ -149,7 +150,8 @@ struct PDFThumbnailView: View {
                     .resizable()
                     .scaledToFit()
             } else {
-                Color.gray
+                Color.purple
+                    .opacity(0.2)
                     .overlay(ProgressView())
                     .onAppear(perform: generateThumbnail)
             }
