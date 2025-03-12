@@ -316,60 +316,54 @@ import Vision
 
 
 
+
 import SwiftUI
 import VisionKit
 import Vision
 import UIKit
 
-
 struct ScanDocumentView: UIViewControllerRepresentable {
     @Binding var recognisedText: String
     @Binding var structuredText: [(text: String, isTitle: Bool)]
     
+    // Called when the user taps the native Cancel button.
+    var onCancel: () -> Void
+
     func makeCoordinator() -> Coordinator {
-        Coordinator(recognisedText: $recognisedText, structuredText: $structuredText, parent: self)
+        Coordinator(recognisedText: $recognisedText,
+                    structuredText: $structuredText,
+                    parent: self)
     }
     
     func makeUIViewController(context: Context) -> VNDocumentCameraViewController {
         let scanner = VNDocumentCameraViewController()
         scanner.delegate = context.coordinator
+        // Optionally add an instruction label if desired.
         
-        // Add an instruction label.
-        let instructionLabel = UILabel()
-        instructionLabel.text = " Scan the document by column  "
-        instructionLabel.textColor = .white
-        
-        instructionLabel.backgroundColor = .black
-        instructionLabel.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        instructionLabel.textAlignment = .center
-        instructionLabel.translatesAutoresizingMaskIntoConstraints = false
-        instructionLabel.isUserInteractionEnabled = false
-        
-        
-        scanner.view.addSubview(instructionLabel)
-        
-        NSLayoutConstraint.activate([
-            instructionLabel.bottomAnchor.constraint(equalTo: scanner.view.safeAreaLayoutGuide.bottomAnchor, constant: -650),
-            instructionLabel.centerXAnchor.constraint(equalTo: scanner.view.centerXAnchor)
-        ])
         
         return scanner
     }
     
-    func updateUIViewController(_ uiViewController: VNDocumentCameraViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: VNDocumentCameraViewController, context: Context) {
+        // No update needed.
+    }
     
     class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
         @Binding var recognisedText: String
         @Binding var structuredText: [(text: String, isTitle: Bool)]
         var parent: ScanDocumentView
         
-        init(recognisedText: Binding<String>, structuredText: Binding<[(text: String, isTitle: Bool)]>, parent: ScanDocumentView) {
+        init(recognisedText: Binding<String>,
+             structuredText: Binding<[(text: String, isTitle: Bool)]>,
+             parent: ScanDocumentView) {
             self._recognisedText = recognisedText
             self._structuredText = structuredText
             self.parent = parent
         }
         
-        func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
+        // Called when the scanning is successfully completed.
+        func documentCameraViewController(_ controller: VNDocumentCameraViewController,
+                                          didFinishWith scan: VNDocumentCameraScan) {
             let images = extractImages(from: scan)
             let structured = recognizeStructuredText(from: images)
             self.structuredText = structured
@@ -377,6 +371,13 @@ struct ScanDocumentView: UIViewControllerRepresentable {
             controller.dismiss(animated: true)
         }
         
+        // This delegate method is called when the user taps the native Cancel button.
+        func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
+            parent.onCancel()
+            controller.dismiss(animated: true)
+        }
+        
+        // Helper: Extract images from the scan.
         private func extractImages(from scan: VNDocumentCameraScan) -> [CGImage] {
             var images = [CGImage]()
             for i in 0..<scan.pageCount {
@@ -387,6 +388,7 @@ struct ScanDocumentView: UIViewControllerRepresentable {
             return images
         }
         
+        // Helper: Recognize structured text from the images.
         private func recognizeStructuredText(from images: [CGImage]) -> [(text: String, isTitle: Bool)] {
             var globalResult: [(text: String, isTitle: Bool)] = []
             for image in images {
@@ -405,6 +407,7 @@ struct ScanDocumentView: UIViewControllerRepresentable {
                 request.usesLanguageCorrection = true
                 let handler = VNImageRequestHandler(cgImage: image, options: [:])
                 try? handler.perform([request])
+                
                 var groupedResult: [(text: String, isTitle: Bool)] = []
                 var currentParagraph = ""
                 for (text, isTitle) in observationsArray {
@@ -435,4 +438,5 @@ struct ScanDocumentView: UIViewControllerRepresentable {
         }
     }
 }
+
 
