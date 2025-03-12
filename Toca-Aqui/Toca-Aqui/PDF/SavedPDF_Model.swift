@@ -755,6 +755,7 @@ func generateStyledPDF(text: String) -> URL? {
 
 func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)],
                            documentName: String,
+                           documentDate: Date,
                            icon: UIImage?) -> URL? {
     let fileName = "Structured_Scanned_Document_\(UUID().uuidString).pdf"
     let pdfURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -769,7 +770,12 @@ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)],
         try renderer.writePDF(to: pdfURL, withActions: { pdfContext in
             // Start a new page and draw the header/footer layout.
             pdfContext.beginPage()
-            drawPageLayout(in: pdfContext, pageSize: pageSize, pageNumber: pageNumber, documentName: documentName, icon: icon)
+            drawPageLayout(in: pdfContext,
+                           pageSize: pageSize,
+                           pageNumber: pageNumber,
+                           documentName: documentName,
+                           documentDate: documentDate,
+                           icon: icon)
             
             // Adjust your content's starting yOffset to leave room for the header.
             var yOffset: CGFloat = 40   // Start below the header
@@ -833,10 +839,15 @@ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)],
                 }
                 
                 // If not enough space for the block, start a new page.
-                if yOffset + blockHeight + spacingAfterBlock > pageSize.height - 50 { // 50 points reserved for footer
+                if yOffset + blockHeight + spacingAfterBlock > pageSize.height - 50 { // 50 points reserved for footer area
                     pdfContext.beginPage()
                     pageNumber += 1
-                    drawPageLayout(in: pdfContext, pageSize: pageSize, pageNumber: pageNumber, documentName: documentName, icon: icon)
+                    drawPageLayout(in: pdfContext,
+                                   pageSize: pageSize,
+                                   pageNumber: pageNumber,
+                                   documentName: documentName,
+                                   documentDate: documentDate,
+                                   icon: icon)
                     yOffset = 40  // Reset yOffset on the new page
                 }
                 
@@ -854,15 +865,17 @@ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)],
 }
 
 /// Draws the page layout including header and footer elements:
-/// - A top horizontal line.
-/// - The document name at the top left.
-/// - An icon at the top right (if provided).
-/// - A bottom horizontal line.
-/// - The page number at the bottom right.
+/// - The document name on the top left (above the top line).
+/// - An icon on the top right (above the top line).
+/// - A top horizontal line drawn just below the header elements.
+/// - A bottom horizontal line drawn near the bottom of the page.
+/// - The document date on the bottom left below the bottom line.
+/// - The page number on the bottom right below the bottom line.
 func drawPageLayout(in context: UIGraphicsPDFRendererContext,
                     pageSize: CGSize,
                     pageNumber: Int,
                     documentName: String,
+                    documentDate: Date,
                     icon: UIImage?) {
     let cgContext = context.cgContext
     
@@ -870,11 +883,11 @@ func drawPageLayout(in context: UIGraphicsPDFRendererContext,
     cgContext.setLineWidth(2.0)
     cgContext.setStrokeColor(UIColor.black.cgColor)
     
-    // Define a header area for the document name and icon.
+    // Header area for document name and icon.
     let headerAreaTop: CGFloat = 10       // Top margin for header elements.
     let headerAreaBottom: CGFloat = 30    // Bottom boundary for header elements.
     
-    // Draw the document name on the top left within the header area.
+    // Draw the document name on the top left.
     let nameAttributes: [NSAttributedString.Key: Any] = [
          .font: UIFont.systemFont(ofSize: 14),
          .foregroundColor: UIColor.black
@@ -885,9 +898,9 @@ func drawPageLayout(in context: UIGraphicsPDFRendererContext,
     let nameRect = CGRect(x: nameX, y: nameY, width: nameSize.width, height: nameSize.height)
     documentName.draw(in: nameRect, withAttributes: nameAttributes)
     
-    // Draw the icon on the top right within the header area.
+    // Draw the icon on the top right.
     if let icon = icon {
-        let iconSize = CGSize(width: 24, height: 24) // Adjust size as needed.
+        let iconSize = CGSize(width: 24, height: 24) // Adjust as needed.
         let iconX = pageSize.width - 20 - iconSize.width  // Right margin offset.
         let iconY = headerAreaTop  // Align with document name.
         let iconRect = CGRect(x: iconX, y: iconY, width: iconSize.width, height: iconSize.height)
@@ -895,16 +908,30 @@ func drawPageLayout(in context: UIGraphicsPDFRendererContext,
     }
     
     // Draw the top horizontal line below the header area.
-    let topLineY: CGFloat = headerAreaBottom + 5  // For example, at y = 35
+    let topLineY: CGFloat = headerAreaBottom + 5  // e.g., at y = 35
     cgContext.move(to: CGPoint(x: 20, y: topLineY))
     cgContext.addLine(to: CGPoint(x: pageSize.width - 20, y: topLineY))
     cgContext.strokePath()
     
-    // Draw the bottom footer line.
+    // Draw the bottom horizontal line.
     let bottomLineY: CGFloat = pageSize.height - 40
     cgContext.move(to: CGPoint(x: 20, y: bottomLineY))
     cgContext.addLine(to: CGPoint(x: pageSize.width - 20, y: bottomLineY))
     cgContext.strokePath()
+    
+    // Format and draw the document date in the bottom left corner.
+    let dateFormatter = DateFormatter()
+    dateFormatter.locale = Locale.current  // Ensures the formatter uses the device's locale.
+    dateFormatter.dateStyle = .medium
+    dateFormatter.timeStyle = .short
+    let dateString = dateFormatter.string(from: documentDate)
+    let dateAttributes: [NSAttributedString.Key: Any] = [
+         .font: UIFont.systemFont(ofSize: 12),
+         .foregroundColor: UIColor.black
+    ]
+    let dateSize = dateString.size(withAttributes: dateAttributes)
+    let dateRect = CGRect(x: 20, y: bottomLineY + 5, width: dateSize.width, height: dateSize.height)
+    dateString.draw(in: dateRect, withAttributes: dateAttributes)
     
     // Draw the page number in the bottom right corner.
     let pageNumberString = "\(pageNumber)"

@@ -86,7 +86,7 @@ struct Content_Camera_View: View {
                             }
                             
                             // Phase 2: Create the PDF.
-                            if let pdfURL = generateStructuredPDF(textSections: structuredText, documentName: "Origo", icon: UIImage(named: "book") ) {
+                            if let pdfURL = generateStructuredPDF(textSections: structuredText, documentName: "Origo", documentDate: Date(), icon: UIImage(named: "book") ) {
                                 for progress in stride(from: 1.0, through: 2.0, by: 0.1) {
                                     
                                         downloadProgress = progress
