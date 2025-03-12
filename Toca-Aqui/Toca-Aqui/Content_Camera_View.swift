@@ -15,13 +15,15 @@ struct Content_Camera_View: View {
     @State var recognisedText: String = "Tap the button to scan a document."
     @State var output: String = ""   // Model-generated summary.
     @State private var pdfFile: PDFFile?
-    @State private var showScanner: Bool = false
     
-    // New states for loading & progress.
+    // States for loading & progress.
     @State private var downloadProgress: Double = 0.0
     @State private var isDownloading: Bool = false
     @State private var statusMessage: String = "Downloading the Model"
     
+    // State for presenting the scanner.
+    @State private var showScanner: Bool = false
+
     // Bottom sheet state:
     @State private var sheetOffset: CGFloat = UIScreen.main.bounds.height * 0.9 - 100
     private var maxHeight: CGFloat { UIScreen.main.bounds.height * 0.9 }
@@ -34,117 +36,119 @@ struct Content_Camera_View: View {
     @Environment(\.modelContext) private var modelContext
 
     var body: some View {
-        ZStack {
-            NavigationView {
-                ZStack {
-                    Color.purple
-                        .edgesIgnoringSafeArea(.all)
-                        .opacity(0.1)
-                    
-                    VStack(spacing: 20) {
-                        Button(action: {
-                            showScanner = true
-                        }) {
-                            Image(systemName: "camera.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 90, height: 90)
-                                .padding(48)
-                                .background {
-                                    Circle()
-                                        .fill(Color.white)
-                                        .shadow(radius: 10)
-                                }
+        NavigationView {
+            ZStack {
+                Color.purple
+                    .edgesIgnoringSafeArea(.all)
+                    .opacity(0.1)
+                
+                VStack(spacing: 20) {
+                    Button(action: {
+                        showScanner = true
+                    }) {
+                        Image(systemName: "camera.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 90, height: 90)
+                            .padding(48)
+                            .background {
+                                Circle()
+                                    .fill(Color.white)
+                                    .shadow(radius: 10)
+                            }
+                    }
+                }
+                .fullScreenCover(isPresented: $showScanner) {
+                            ScanDocumentView(recognisedText: $recognisedText,
+                                             structuredText: $structuredText,
+                                             onCancel: { showScanner = false })
+                            .ignoresSafeArea()
                         }
-                    }
-                    .foregroundStyle(.purple)
-                    .padding()
-                    .sheet(isPresented: $showScanner) {
-                        ScanDocumentView(recognisedText: $recognisedText,
-                                         structuredText: $structuredText)
-                    }
-                    .onChange(of: recognisedText) { _, newValue in
-                        guard newValue != "Tap the button to scan a document." else { return }
+                .foregroundStyle(.purple)
+                .padding()
+                // Process the scanned text once recognisedText is updated.
+                .onChange(of: recognisedText) { newValue in
+                    if newValue != "Tap the button to scan a document." {
                         Task {
-                            // Start the process.
                             await MainActor.run {
                                 isDownloading = true
                                 downloadProgress = 0.0
                                 statusMessage = "Downloading the Model"
                             }
                             
-                            // Phase 1: Downloading the model.
-                            // Assume generate() updates progress from 0.0 to near 0.5.
+                            // Phase 1: Download the model.
                             try await generate(structuredText: structuredText,
                                                  downloadProgress: $downloadProgress)
                             
-                            // After the model is downloaded, force progress to 0.5.
                             await MainActor.run {
                                 downloadProgress = 1.0
                                 statusMessage = "Creating pdf"
                             }
                             
-                            // Phase 2: Creating the PDF.
+                            // Phase 2: Create the PDF.
                             if let pdfURL = generateStructuredPDF(textSections: structuredText) {
-                                // Simulate PDF generation progress from 0.5 to 1.0.
                                 for progress in stride(from: 1.0, through: 2.0, by: 0.1) {
-                                    await MainActor.run {
+                                    
                                         downloadProgress = progress
-                                    }
+                                    
                                     try await Task.sleep(nanoseconds: 300_000_000)
                                 }
                                 
-                                await MainActor.run {
+                                
                                     pdfFile = PDFFile(url: pdfURL)
-                                }
+                                
                             }
                             
-                            await MainActor.run {
+                           
                                 isDownloading = false
-                            }
+                            
                         }
                     }
-                    .sheet(item: $pdfFile) { file in
-                        PreviewAndSavePDFView(fileURL: file.url, onSave: { _ in
-                            storePDF(url: file.url,
-                                     fileName: documentName,
-                                     context: modelContext)
-                        }, documentName: $documentName)
+                }
+                // Present the generated PDF.
+                .sheet(item: $pdfFile) { file in
+                    PreviewAndSavePDFView(fileURL: file.url, onSave: { _ in
+                        storePDF(url: file.url,
+                                 fileName: documentName,
+                                 context: modelContext)
+                    }, documentName: $documentName)
+                }
+                
+                // Loading overlay.
+                if isDownloading {
+                    LoadingScreen(isDownloading: $isDownloading,
+                                  downloadProgress: $downloadProgress,
+                                  statusMessage: $statusMessage)
+                }
+                
+                // Show the bottom sheet only when the scanner is not shown.
+                if !showScanner {
+                    DraggableBottomSheet(
+                        offset: $sheetOffset,
+                        maxHeight: maxHeight,
+                        minHeight: minHeight,
+                        bottomMargin: bottomMargin
+                    ) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("Documents")
+                                    .font(.headline)
+                                    .foregroundColor(.black)
+                                    .padding(.leading, 20)
+                                Spacer()
+                                Image(systemName: "book")
+                                    .padding(.trailing, 30)
+                                    .containerShape(Circle())
+                            }
+                            SavedPDFsView()
+                                .modelContainer(modelContext.container)
+                        }
+                        .padding(.top, 8)
                     }
                 }
             }
-            
-            // Show the loading overlay when isDownloading is true.
-            if isDownloading {
-                LoadingScreen(isDownloading: $isDownloading,
-                              downloadProgress: $downloadProgress,
-                              statusMessage: $statusMessage)
-            }
-            
-            // Persistent bottom sheet showing saved PDFs.
-            DraggableBottomSheet(
-                offset: $sheetOffset,
-                maxHeight: maxHeight,
-                minHeight: minHeight,
-                bottomMargin: bottomMargin
-            ) {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Documents")
-                            .font(.headline)
-                            .foregroundColor(.black)
-                            .padding(.leading, 20)
-                        Spacer()
-                        Image(systemName: "book")
-                            .padding(.trailing, 30)
-                            .containerShape(Circle())
-                    }
-                    SavedPDFsView()
-                        .modelContainer(modelContext.container)
-                }
-                .padding(.top, 8)
-            }
+            .foregroundStyle(.purple)
         }
-        .foregroundStyle(.purple)
+        // Present the scanner as a full-screen view.
     }
 }
