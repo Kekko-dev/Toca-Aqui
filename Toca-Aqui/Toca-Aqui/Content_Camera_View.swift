@@ -38,7 +38,7 @@ struct Content_Camera_View: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color.purple
+                Color.church_purple_color
                     .edgesIgnoringSafeArea(.all)
                     .opacity(0.1)
                 
@@ -64,7 +64,7 @@ struct Content_Camera_View: View {
                                              onCancel: { showScanner = false })
                             .ignoresSafeArea()
                         }
-                .foregroundStyle(.purple)
+                .foregroundStyle(Color.church_purple_color)
                 .padding()
                 // Process the scanned text once recognisedText is updated.
                 .onChange(of: recognisedText) { newValue in
@@ -133,7 +133,7 @@ struct Content_Camera_View: View {
                             HStack {
                                 Text("Documents")
                                     .font(.headline)
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                                     .padding(.leading, 20)
                                 Spacer()
                                 Image(systemName: "book")
@@ -147,8 +147,14 @@ struct Content_Camera_View: View {
                     }
                 }
             }
-            .foregroundStyle(.purple)
+            .foregroundStyle(Color.church_purple_color)
         }
         // Present the scanner as a full-screen view.
     }
+}
+
+
+
+extension Color {
+    static let church_purple_color: Color = Color(red: 134/255, green: 59/255, blue: 158/255)
 }
