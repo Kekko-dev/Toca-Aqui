@@ -62,18 +62,19 @@ struct DraggableBottomSheet<Content: View>: View {
         return VStack(spacing: 0) {
             // Drag handle.
             Capsule()
-                .fill(Color.gray)
+                .fill(Color.purple)
                 .frame(width: 40, height: 6)
                 .padding(8)
             
             // Sheet content.
             content
-                .padding(.bottom, 16)
+                //.padding(.bottom, 16)
         }
         .frame(width: UIScreen.main.bounds.width, height: maxHeight, alignment: .top)
         .background(
             RoundedRectangle(cornerRadius: 48, style: .continuous)
-                .fill(Color(UIColor.secondarySystemBackground))
+                .fill(Color(UIColor.purple))
+                .opacity(0.3)
         )
         //.shadow(radius: 5)
         // The sheet's vertical offset: currentOffset plus a bottom margin.

@@ -28,39 +28,40 @@ struct Content_Camera_View: View {
     
     @State var documentName: String = ""
     @State var structuredText: [(text: String, isTitle: Bool)] = []
-
+    
+    
+    @State var downloadProgress: Double = 0
+    
+    
     @Environment(\.modelContext) private var modelContext
 
     var body: some View {
         ZStack {
-            NavigationView {
-                VStack(spacing: 20) {
+            Color.purple.ignoresSafeArea()
+                .zIndex(-20)
+            
+            NavigationStack {
+                ZStack {
+                    Color.purple.edgesIgnoringSafeArea(.all)
+                        .opacity(0.1)
                     
-                    
-
-                    Button(action: {
-                        showScanner = true
-                    }) {
-                        Image(systemName: "camera.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 90, height: 90)
-                            .padding(48)
-                            .background {
-                                Circle()
-                                    .fill(Color.white)
-                                    .shadow(radius: 10)
-                            }
-                            .foregroundColor(.black)
-                    }
-                    //progress bar for the model download
-                    if downloadProgress > 0.0 && downloadProgress < 1.0 {
-                        VStack {
-                            Text("Downloading model...")
-                                .font(.caption)
-                            ProgressView(value: downloadProgress, total: 1.0)
-                                .progressViewStyle(LinearProgressViewStyle())
-                                .padding(.horizontal, 40)
+                    VStack(spacing: 20) {
+                        Button(action: {
+                            showScanner = true
+                        }) {
+                            Image(systemName: "camera.fill")
+                            
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 90, height: 90)
+                                .padding(48)
+                                .background {
+                                    Circle()
+                                        .fill(Color.white)
+                                        .shadow(radius: 10)
+                                }
+                                .foregroundStyle(.purple)
+                            
                         }
                     }
                 }
@@ -75,21 +76,53 @@ struct Content_Camera_View: View {
                         try await generate(structuredText: structuredText, downloadProgress: $downloadProgress)
                         print("Model output: \(output)")
                         
-                        // Generazione PDF dopo la sintesi
-                        if let pdfURL = generateStructuredPDF(textSections: structuredText) {
-                            try await Task.sleep(nanoseconds: 2_500_000_000)
-                            pdfFile = PDFFile(url: pdfURL)
+                        if downloadProgress > 0.0 && downloadProgress < 1.0 {
+                            VStack {
+                                Text("Downloading model...")
+                                    .font(.caption)
+                                ProgressView(value: downloadProgress, total: 1.0)
+                                    .progressViewStyle(LinearProgressViewStyle())
+                                    .padding(.horizontal, 40)
+                            }
                         }
                     }
-                }
-                .sheet(item: $pdfFile) { file in
-                    PreviewAndSavePDFView(fileURL: file.url, onSave: {_ in
-                        storePDF(url: file.url, fileName: documentName, context: modelContext)
-                    }, documentName: $documentName)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    
+                    
+                    
+                    
+                    .sheet(isPresented: $showScanner) {
+                        ScanDocumentView(recognisedText: $recognisedText, structuredText: $structuredText)
+                    }
+                    
+                    
+                    .onChange(of: recognisedText) { _, newValue in
+                        guard newValue != "Tap the button to scan a document." else { return }
+                        Task {
+                            // Call your summarization model function using the structured text.
+                            try await generate(structuredText: structuredText, downloadProgress: .constant(1.0))
+                            try await Task.sleep(nanoseconds: 1_000_000_000)
+                            print("Model output: \(output)")
+                            // Generate a PDF using the structured text (which preserves titles and paragraphs).
+                            if let pdfURL = generateStructuredPDF(textSections: structuredText) {
+                                try await Task.sleep(nanoseconds: 2_500_000_000)
+                                pdfFile = PDFFile(url: pdfURL)
+                            }
+                        }
+                    }
+                    .sheet(item: $pdfFile) { file in
+                        PreviewAndSavePDFView(fileURL: file.url, onSave: {_ in
+                            storePDF(url: file.url,fileName: documentName, context: modelContext)
+                        }, documentName: $documentName)
+                    }
                 }
             }
             
-            // Persistent bottom sheet showing saved PDFs
+            .background(.purple)
+            .ignoresSafeArea()
+            
+            
+            // Persistent bottom sheet showing the saved PDFs.
             DraggableBottomSheet(
                 offset: $sheetOffset,
                 maxHeight: maxHeight,
@@ -100,11 +133,14 @@ struct Content_Camera_View: View {
                     HStack {
                         Text("Documents")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                             .padding(.leading, 20)
                         Spacer()
-                        Image(systemName: "text.document.fill")
+                        Image(systemName: "book")
                             .padding(.trailing, 30)
+                        // .frame(width: 10, height: 10)
+                            .containerShape(.circle)
+                        //.imageScale(.small)
                     }
                     
                     // Show the list of saved PDFs.
@@ -113,6 +149,9 @@ struct Content_Camera_View: View {
                 }
                 .padding(.top, 8)
             }
+            .foregroundStyle(.purple)
         }
+        
+        
     }
 }
