@@ -6,7 +6,6 @@
 //
 
 
-
 import SwiftUI
 import PDFKit
 import QuickLook
@@ -14,22 +13,20 @@ import MLXLLM
 import MLXLMCommon
 import SwiftData
 
-
 struct Content_Camera_View: View {
     @State var recognisedText: String = "Tap the button to scan a document."
-    @State var output: String = ""   // This will store the model-generated summary.
+    @State var output: String = ""   // Store model-generated summary
     @State private var pdfFile: PDFFile?
     @State private var showScanner: Bool = false
-    // Bottom sheet state:
+    @State private var downloadProgress: Double = 0.0  // Stato per la barra di progresso
+
+    // Bottom sheet state
     @State private var sheetOffset: CGFloat = UIScreen.main.bounds.height * 0.9 - 100
-    
     private var maxHeight: CGFloat { UIScreen.main.bounds.height * 0.9 }
     private let minHeight: CGFloat = 100
     private let bottomMargin: CGFloat = 30
     
     @State var documentName: String = ""
-    
-    
     @State var structuredText: [(text: String, isTitle: Bool)] = []
     
     
@@ -37,7 +34,7 @@ struct Content_Camera_View: View {
     
     
     @Environment(\.modelContext) private var modelContext
-    
+
     var body: some View {
         ZStack {
             Color.purple.ignoresSafeArea()
@@ -66,6 +63,18 @@ struct Content_Camera_View: View {
                                 .foregroundStyle(.purple)
                             
                         }
+                    }
+                }
+                .padding()
+                .sheet(isPresented: $showScanner) {
+                    ScanDocumentView(recognisedText: $recognisedText, structuredText: $structuredText)
+                }
+                .onChange(of: recognisedText) { _, newValue in
+                    guard newValue != "Tap the button to scan a document." else { return }
+                    Task {
+                        // Chiamata alla funzione con il binding della progress bar
+                        try await generate(structuredText: structuredText, downloadProgress: $downloadProgress)
+                        print("Model output: \(output)")
                         
                         if downloadProgress > 0.0 && downloadProgress < 1.0 {
                             VStack {
@@ -121,7 +130,6 @@ struct Content_Camera_View: View {
                 bottomMargin: bottomMargin
             ) {
                 VStack(alignment: .leading, spacing: 8) {
-                    // Header with "Documents" and the icon.
                     HStack {
                         Text("Documents")
                             .font(.headline)
@@ -147,5 +155,3 @@ struct Content_Camera_View: View {
         
     }
 }
-
-
