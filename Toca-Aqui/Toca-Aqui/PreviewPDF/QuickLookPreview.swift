@@ -50,16 +50,20 @@ struct PreviewAndSavePDFView: View {
     
     var body: some View {
         NavigationView {
-            QuickLookPreview(fileURL: fileURL)
-                .edgesIgnoringSafeArea(.all)
+            
+            VStack(spacing:0){
+                
+                TextField("Enter document name", text: $documentName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+                
+                QuickLookPreview(fileURL: fileURL)
+                    .edgesIgnoringSafeArea(.all)
+                
+            }
+                
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    // Place the text field in the middle of the navigation bar.
-                    ToolbarItem(placement: .principal) {
-                        TextField("Enter document name", text: $documentName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .frame(maxWidth: 300)
-                    }
                     // Cancel button on the left.
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button("Cancel") {
