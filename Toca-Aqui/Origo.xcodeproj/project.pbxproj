@@ -16,7 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		610479462D688C7D004BE669 /* Toca-Aqui.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Toca-Aqui.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		610479462D688C7D004BE669 /* Origo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Origo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -56,7 +56,7 @@
 		610479472D688C7D004BE669 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				610479462D688C7D004BE669 /* Toca-Aqui.app */,
+				610479462D688C7D004BE669 /* Origo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -71,9 +71,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		610479452D688C7D004BE669 /* Toca-Aqui */ = {
+		610479452D688C7D004BE669 /* Origo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 610479542D688C7E004BE669 /* Build configuration list for PBXNativeTarget "Toca-Aqui" */;
+			buildConfigurationList = 610479542D688C7E004BE669 /* Build configuration list for PBXNativeTarget "Origo" */;
 			buildPhases = (
 				610479422D688C7D004BE669 /* Sources */,
 				610479432D688C7D004BE669 /* Frameworks */,
@@ -86,7 +86,7 @@
 			fileSystemSynchronizedGroups = (
 				610479482D688C7D004BE669 /* Toca-Aqui */,
 			);
-			name = "Toca-Aqui";
+			name = Origo;
 			packageProductDependencies = (
 				61BC524E2D71A756005981D6 /* MLX */,
 				61BC52502D71A756005981D6 /* MLXFFT */,
@@ -96,7 +96,7 @@
 				6105178D2D75B20900C02AE8 /* MLXLLM */,
 			);
 			productName = "Toca-Aqui";
-			productReference = 610479462D688C7D004BE669 /* Toca-Aqui.app */;
+			productReference = 610479462D688C7D004BE669 /* Origo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -114,7 +114,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 610479412D688C7D004BE669 /* Build configuration list for PBXProject "Toca-Aqui" */;
+			buildConfigurationList = 610479412D688C7D004BE669 /* Build configuration list for PBXProject "Origo" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -133,7 +133,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				610479452D688C7D004BE669 /* Toca-Aqui */,
+				610479452D688C7D004BE669 /* Origo */,
 			);
 		};
 /* End PBXProject section */
@@ -345,7 +345,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		610479412D688C7D004BE669 /* Build configuration list for PBXProject "Toca-Aqui" */ = {
+		610479412D688C7D004BE669 /* Build configuration list for PBXProject "Origo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				610479522D688C7E004BE669 /* Debug */,
@@ -354,7 +354,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		610479542D688C7E004BE669 /* Build configuration list for PBXNativeTarget "Toca-Aqui" */ = {
+		610479542D688C7E004BE669 /* Build configuration list for PBXNativeTarget "Origo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				610479552D688C7E004BE669 /* Debug */,
