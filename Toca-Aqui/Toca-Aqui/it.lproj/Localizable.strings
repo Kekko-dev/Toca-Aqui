@@ -1,0 +1,21 @@
+/* 
+  Localizable.strings
+  Toca-Aqui
+
+  Created by Francesco Silvestro on 12/03/25.
+  
+*/
+
+
+"Downloading the Model" = "Sto scaricando il modello";
+"Creating pdf" = "Creazione del PDF";
+"Tap the button to scan a document." = "Tocca il pulsante per scansionare un documento.";
+"Documents" = "Documenti";
+"Delete" = "Elimina";
+"Rename" = "Rinomina";
+"Share" = "Condividi";
+"Rename Document" = "Rinomina Documento";
+"New Name" = "Nuovo Nome";
+"Cancel" = "Annulla";
+"Save" = "Salva";
+"Enter document name" = "Inserisci il nome del documento";

@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		6105178E2D75B20900C02AE8 /* MLXLLM in Frameworks */ = {isa = PBXBuildFile; productRef = 6105178D2D75B20900C02AE8 /* MLXLLM */; };
-		613CCD522D8179140067F0D3 /* LoadingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613CCD512D8179140067F0D3 /* LoadingScreen.swift */; };
 		61BC524F2D71A756005981D6 /* MLX in Frameworks */ = {isa = PBXBuildFile; productRef = 61BC524E2D71A756005981D6 /* MLX */; };
 		61BC52512D71A756005981D6 /* MLXFFT in Frameworks */ = {isa = PBXBuildFile; productRef = 61BC52502D71A756005981D6 /* MLXFFT */; };
 		61BC52532D71A756005981D6 /* MLXFast in Frameworks */ = {isa = PBXBuildFile; productRef = 61BC52522D71A756005981D6 /* MLXFast */; };
@@ -18,7 +17,6 @@
 
 /* Begin PBXFileReference section */
 		610479462D688C7D004BE669 /* Toca-Aqui.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Toca-Aqui.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		613CCD512D8179140067F0D3 /* LoadingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -49,7 +47,6 @@
 		6104793D2D688C7D004BE669 = {
 			isa = PBXGroup;
 			children = (
-				613CCD512D8179140067F0D3 /* LoadingScreen.swift */,
 				610479482D688C7D004BE669 /* Toca-Aqui */,
 				61BC52582D71AB8A005981D6 /* Frameworks */,
 				610479472D688C7D004BE669 /* Products */,
@@ -123,6 +120,7 @@
 			knownRegions = (
 				en,
 				Base,
+				it,
 			);
 			mainGroup = 6104793D2D688C7D004BE669;
 			minimizedProjectReferenceProxies = 1;
@@ -155,7 +153,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				613CCD522D8179140067F0D3 /* LoadingScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,6 +164,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -231,6 +229,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
