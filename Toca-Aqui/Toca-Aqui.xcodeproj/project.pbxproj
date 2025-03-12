@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6105178E2D75B20900C02AE8 /* MLXLLM in Frameworks */ = {isa = PBXBuildFile; productRef = 6105178D2D75B20900C02AE8 /* MLXLLM */; };
+		613CCD522D8179140067F0D3 /* LoadingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613CCD512D8179140067F0D3 /* LoadingScreen.swift */; };
 		61BC524F2D71A756005981D6 /* MLX in Frameworks */ = {isa = PBXBuildFile; productRef = 61BC524E2D71A756005981D6 /* MLX */; };
 		61BC52512D71A756005981D6 /* MLXFFT in Frameworks */ = {isa = PBXBuildFile; productRef = 61BC52502D71A756005981D6 /* MLXFFT */; };
 		61BC52532D71A756005981D6 /* MLXFast in Frameworks */ = {isa = PBXBuildFile; productRef = 61BC52522D71A756005981D6 /* MLXFast */; };
@@ -17,6 +18,7 @@
 
 /* Begin PBXFileReference section */
 		610479462D688C7D004BE669 /* Toca-Aqui.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Toca-Aqui.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		613CCD512D8179140067F0D3 /* LoadingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -47,6 +49,7 @@
 		6104793D2D688C7D004BE669 = {
 			isa = PBXGroup;
 			children = (
+				613CCD512D8179140067F0D3 /* LoadingScreen.swift */,
 				610479482D688C7D004BE669 /* Toca-Aqui */,
 				61BC52582D71AB8A005981D6 /* Frameworks */,
 				610479472D688C7D004BE669 /* Products */,
@@ -152,6 +155,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				613CCD522D8179140067F0D3 /* LoadingScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,7 +291,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Toca-Aqui/Preview Content\"";
-				DEVELOPMENT_TEAM = 79DJA69MKY;
+				DEVELOPMENT_TEAM = 2ZUKF3C2AM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app uses the camera to scan portions of text, helping to create a grammar document optimized for LIS (Italian Sign Language). Camera access is essential for this feature.";
@@ -317,7 +321,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Toca-Aqui/Preview Content\"";
-				DEVELOPMENT_TEAM = 79DJA69MKY;
+				DEVELOPMENT_TEAM = 2ZUKF3C2AM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app uses the camera to scan portions of text, helping to create a grammar document optimized for LIS (Italian Sign Language). Camera access is essential for this feature.";
