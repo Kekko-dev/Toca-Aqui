@@ -62,7 +62,7 @@ struct DraggableBottomSheet<Content: View>: View {
         return VStack(spacing: 0) {
             // Drag handle.
             Capsule()
-                .fill(Color.purple)
+                .fill(Color.church_purple_color)
                 .frame(width: 40, height: 6)
                 .padding(8)
             
@@ -73,7 +73,7 @@ struct DraggableBottomSheet<Content: View>: View {
         .frame(width: UIScreen.main.bounds.width, height: maxHeight, alignment: .top)
         .background(
             RoundedRectangle(cornerRadius: 48, style: .continuous)
-                .fill(Color(UIColor.purple))
+                .fill(Color.church_purple_color)
                 .opacity(0.3)
         )
         //.shadow(radius: 5)
