@@ -617,8 +617,145 @@ func generateStyledPDF(text: String) -> URL? {
     }
 }
 
+// BACKUP
 
-func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)]) -> URL? {
+
+
+/*
+ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)]) -> URL? {
+ let fileName = "Structured_Scanned_Document_\(UUID().uuidString).pdf"
+ let pdfURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+ .appendingPathComponent(fileName)
+ 
+ let format = UIGraphicsPDFRendererFormat()
+ let pageSize = CGSize(width: 612, height: 792)  // Standard A4 dimensions
+ let renderer = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: pageSize), format: format)
+ 
+ do {
+ try renderer.writePDF(to: pdfURL, withActions: { pdfContext in
+ pdfContext.beginPage()
+ 
+ var yOffset: CGFloat = 20
+ let xOffset: CGFloat = 20
+ let maxWidth: CGFloat = pageSize.width - 40
+ let spacingAfterBlock: CGFloat = 10
+ let spacingBetweenTitleAndBody: CGFloat = 5
+ 
+ var i = 0
+ while i < textSections.count {
+ // When a title is immediately followed by a body, combine them.
+ if i < textSections.count - 1 && textSections[i].isTitle && !textSections[i+1].isTitle {
+ let combinedAttributedString = NSMutableAttributedString()
+ 
+ // Title attributes.
+ let titleAttributes: [NSAttributedString.Key: Any] = [
+ .font: UIFont.boldSystemFont(ofSize: 22),
+ .paragraphStyle: {
+ let ps = NSMutableParagraphStyle()
+ ps.alignment = .left
+ ps.lineBreakMode = .byWordWrapping
+ return ps
+ }()
+ ]
+ // Body attributes.
+ let bodyAttributes: [NSAttributedString.Key: Any] = [
+ .font: UIFont.systemFont(ofSize: 16),
+ .paragraphStyle: {
+ let ps = NSMutableParagraphStyle()
+ ps.alignment = .left
+ ps.lineBreakMode = .byWordWrapping
+ return ps
+ }()
+ ]
+ 
+ let titleText = textSections[i].text.trimmingCharacters(in: .whitespacesAndNewlines)
+ let bodyText = textSections[i+1].text.trimmingCharacters(in: .whitespacesAndNewlines)
+ 
+ let titleAttrStr = NSAttributedString(string: titleText + "\n", attributes: titleAttributes)
+ let bodyAttrStr = NSAttributedString(string: bodyText, attributes: bodyAttributes)
+ 
+ combinedAttributedString.append(titleAttrStr)
+ combinedAttributedString.append(bodyAttrStr)
+ 
+ let constraintRect = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
+ let combinedBounding = combinedAttributedString.boundingRect(with: constraintRect,
+ options: .usesLineFragmentOrigin,
+ context: nil)
+ let combinedHeight = ceil(combinedBounding.height)
+ 
+ // If there isn't enough space in the current page, start a new page.
+ if yOffset + combinedHeight > pageSize.height - 20 {
+ pdfContext.beginPage()
+ yOffset = 20
+ }
+ 
+ // If the combined block is too tall to fit even on an empty page,
+ // scale it down to fit.
+ if combinedHeight > pageSize.height - 40 {
+ let availableHeight = pageSize.height - 40
+ let scaleFactor = availableHeight / combinedHeight
+ pdfContext.cgContext.saveGState()
+ // Translate to drawing position.
+ pdfContext.cgContext.translateBy(x: xOffset, y: yOffset)
+ pdfContext.cgContext.scaleBy(x: scaleFactor, y: scaleFactor)
+ // Draw at (0,0) since we've translated.
+ combinedAttributedString.draw(in: CGRect(x: 0,
+ y: 0,
+ width: maxWidth / scaleFactor,
+ height: combinedHeight))
+ pdfContext.cgContext.restoreGState()
+ yOffset += availableHeight + spacingAfterBlock
+ } else {
+ let drawRect = CGRect(x: xOffset, y: yOffset, width: maxWidth, height: combinedHeight)
+ combinedAttributedString.draw(in: drawRect)
+ yOffset += combinedHeight + spacingAfterBlock
+ }
+ 
+ i += 2  // Skip the next block (already merged).
+ } else {
+ // Process single block.
+ let block = textSections[i]
+ let attributes: [NSAttributedString.Key: Any] = [
+ .font: block.isTitle ? UIFont.boldSystemFont(ofSize: 22) : UIFont.systemFont(ofSize: 16),
+ .paragraphStyle: {
+ let ps = NSMutableParagraphStyle()
+ ps.alignment = .left
+ ps.lineBreakMode = .byWordWrapping
+ return ps
+ }()
+ ]
+ 
+ let attrStr = NSAttributedString(string: block.text, attributes: attributes)
+ let constraintRect = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
+ let bounding = attrStr.boundingRect(with: constraintRect,
+ options: .usesLineFragmentOrigin,
+ context: nil)
+ let requiredHeight = ceil(bounding.height)
+ 
+ if yOffset + requiredHeight + spacingAfterBlock > pageSize.height - 20 {
+ pdfContext.beginPage()
+ yOffset = 20
+ }
+ 
+ let textRect = CGRect(x: xOffset, y: yOffset, width: maxWidth, height: requiredHeight)
+ attrStr.draw(in: textRect)
+ yOffset += requiredHeight + spacingAfterBlock
+ i += 1
+ }
+ }
+ })
+ print("✅ Structured PDF generated at: \(pdfURL.path)")
+ return pdfURL
+ } catch {
+ print("❌ Failed to generate PDF: \(error)")
+ return nil
+ }
+ }
+ */
+
+func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)],
+                           documentName: String,
+                           icon: UIImage?) -> URL? {
     let fileName = "Structured_Scanned_Document_\(UUID().uuidString).pdf"
     let pdfURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                         .appendingPathComponent(fileName)
@@ -628,22 +765,27 @@ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)]) -> URL
     let renderer = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: pageSize), format: format)
     
     do {
+        var pageNumber = 1
         try renderer.writePDF(to: pdfURL, withActions: { pdfContext in
+            // Start a new page and draw the header/footer layout.
             pdfContext.beginPage()
+            drawPageLayout(in: pdfContext, pageSize: pageSize, pageNumber: pageNumber, documentName: documentName, icon: icon)
             
-            var yOffset: CGFloat = 20
+            // Adjust your content's starting yOffset to leave room for the header.
+            var yOffset: CGFloat = 40   // Start below the header
             let xOffset: CGFloat = 20
             let maxWidth: CGFloat = pageSize.width - 40
             let spacingAfterBlock: CGFloat = 10
-            let spacingBetweenTitleAndBody: CGFloat = 5
             
             var i = 0
             while i < textSections.count {
-                // When a title is immediately followed by a body, combine them.
+                var attrStr: NSAttributedString
+                var blockHeight: CGFloat = 0
+                
+                // Combine a title and its following body, if applicable.
                 if i < textSections.count - 1 && textSections[i].isTitle && !textSections[i+1].isTitle {
                     let combinedAttributedString = NSMutableAttributedString()
                     
-                    // Title attributes.
                     let titleAttributes: [NSAttributedString.Key: Any] = [
                         .font: UIFont.boldSystemFont(ofSize: 22),
                         .paragraphStyle: {
@@ -653,7 +795,6 @@ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)]) -> URL
                             return ps
                         }()
                     ]
-                    // Body attributes.
                     let bodyAttributes: [NSAttributedString.Key: Any] = [
                         .font: UIFont.systemFont(ofSize: 16),
                         .paragraphStyle: {
@@ -667,49 +808,14 @@ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)]) -> URL
                     let titleText = textSections[i].text.trimmingCharacters(in: .whitespacesAndNewlines)
                     let bodyText = textSections[i+1].text.trimmingCharacters(in: .whitespacesAndNewlines)
                     
-                    let titleAttrStr = NSAttributedString(string: titleText + "\n", attributes: titleAttributes)
-                    let bodyAttrStr = NSAttributedString(string: bodyText, attributes: bodyAttributes)
-                    
-                    combinedAttributedString.append(titleAttrStr)
-                    combinedAttributedString.append(bodyAttrStr)
+                    combinedAttributedString.append(NSAttributedString(string: titleText + "\n", attributes: titleAttributes))
+                    combinedAttributedString.append(NSAttributedString(string: bodyText, attributes: bodyAttributes))
                     
                     let constraintRect = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
-                    let combinedBounding = combinedAttributedString.boundingRect(with: constraintRect,
-                                                                                 options: .usesLineFragmentOrigin,
-                                                                                 context: nil)
-                    let combinedHeight = ceil(combinedBounding.height)
-                    
-                    // If there isn't enough space in the current page, start a new page.
-                    if yOffset + combinedHeight > pageSize.height - 20 {
-                        pdfContext.beginPage()
-                        yOffset = 20
-                    }
-                    
-                    // If the combined block is too tall to fit even on an empty page,
-                    // scale it down to fit.
-                    if combinedHeight > pageSize.height - 40 {
-                        let availableHeight = pageSize.height - 40
-                        let scaleFactor = availableHeight / combinedHeight
-                        pdfContext.cgContext.saveGState()
-                        // Translate to drawing position.
-                        pdfContext.cgContext.translateBy(x: xOffset, y: yOffset)
-                        pdfContext.cgContext.scaleBy(x: scaleFactor, y: scaleFactor)
-                        // Draw at (0,0) since we've translated.
-                        combinedAttributedString.draw(in: CGRect(x: 0,
-                                                                   y: 0,
-                                                                   width: maxWidth / scaleFactor,
-                                                                   height: combinedHeight))
-                        pdfContext.cgContext.restoreGState()
-                        yOffset += availableHeight + spacingAfterBlock
-                    } else {
-                        let drawRect = CGRect(x: xOffset, y: yOffset, width: maxWidth, height: combinedHeight)
-                        combinedAttributedString.draw(in: drawRect)
-                        yOffset += combinedHeight + spacingAfterBlock
-                    }
-                    
-                    i += 2  // Skip the next block (already merged).
+                    blockHeight = ceil(combinedAttributedString.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil).height)
+                    attrStr = combinedAttributedString
+                    i += 2
                 } else {
-                    // Process single block.
                     let block = textSections[i]
                     let attributes: [NSAttributedString.Key: Any] = [
                         .font: block.isTitle ? UIFont.boldSystemFont(ofSize: 22) : UIFont.systemFont(ofSize: 16),
@@ -720,24 +826,23 @@ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)]) -> URL
                             return ps
                         }()
                     ]
-                    
-                    let attrStr = NSAttributedString(string: block.text, attributes: attributes)
+                    attrStr = NSAttributedString(string: block.text, attributes: attributes)
                     let constraintRect = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
-                    let bounding = attrStr.boundingRect(with: constraintRect,
-                                                        options: .usesLineFragmentOrigin,
-                                                        context: nil)
-                    let requiredHeight = ceil(bounding.height)
-                    
-                    if yOffset + requiredHeight + spacingAfterBlock > pageSize.height - 20 {
-                        pdfContext.beginPage()
-                        yOffset = 20
-                    }
-                    
-                    let textRect = CGRect(x: xOffset, y: yOffset, width: maxWidth, height: requiredHeight)
-                    attrStr.draw(in: textRect)
-                    yOffset += requiredHeight + spacingAfterBlock
+                    blockHeight = ceil(attrStr.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil).height)
                     i += 1
                 }
+                
+                // If not enough space for the block, start a new page.
+                if yOffset + blockHeight + spacingAfterBlock > pageSize.height - 50 { // 50 points reserved for footer
+                    pdfContext.beginPage()
+                    pageNumber += 1
+                    drawPageLayout(in: pdfContext, pageSize: pageSize, pageNumber: pageNumber, documentName: documentName, icon: icon)
+                    yOffset = 40  // Reset yOffset on the new page
+                }
+                
+                let textRect = CGRect(x: xOffset, y: yOffset, width: maxWidth, height: blockHeight)
+                attrStr.draw(in: textRect)
+                yOffset += blockHeight + spacingAfterBlock
             }
         })
         print("✅ Structured PDF generated at: \(pdfURL.path)")
@@ -746,4 +851,71 @@ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)]) -> URL
         print("❌ Failed to generate PDF: \(error)")
         return nil
     }
+}
+
+/// Draws the page layout including header and footer elements:
+/// - A top horizontal line.
+/// - The document name at the top left.
+/// - An icon at the top right (if provided).
+/// - A bottom horizontal line.
+/// - The page number at the bottom right.
+func drawPageLayout(in context: UIGraphicsPDFRendererContext,
+                    pageSize: CGSize,
+                    pageNumber: Int,
+                    documentName: String,
+                    icon: UIImage?) {
+    let cgContext = context.cgContext
+    
+    // Increase the line width for thicker lines.
+    cgContext.setLineWidth(2.0)
+    cgContext.setStrokeColor(UIColor.black.cgColor)
+    
+    // Define a header area for the document name and icon.
+    let headerAreaTop: CGFloat = 10       // Top margin for header elements.
+    let headerAreaBottom: CGFloat = 30    // Bottom boundary for header elements.
+    
+    // Draw the document name on the top left within the header area.
+    let nameAttributes: [NSAttributedString.Key: Any] = [
+         .font: UIFont.systemFont(ofSize: 14),
+         .foregroundColor: UIColor.black
+    ]
+    let nameX: CGFloat = 25  // Left margin offset.
+    let nameY: CGFloat = headerAreaTop  // Place it at the very top.
+    let nameSize = documentName.size(withAttributes: nameAttributes)
+    let nameRect = CGRect(x: nameX, y: nameY, width: nameSize.width, height: nameSize.height)
+    documentName.draw(in: nameRect, withAttributes: nameAttributes)
+    
+    // Draw the icon on the top right within the header area.
+    if let icon = icon {
+        let iconSize = CGSize(width: 24, height: 24) // Adjust size as needed.
+        let iconX = pageSize.width - 20 - iconSize.width  // Right margin offset.
+        let iconY = headerAreaTop  // Align with document name.
+        let iconRect = CGRect(x: iconX, y: iconY, width: iconSize.width, height: iconSize.height)
+        icon.draw(in: iconRect)
+    }
+    
+    // Draw the top horizontal line below the header area.
+    let topLineY: CGFloat = headerAreaBottom + 5  // For example, at y = 35
+    cgContext.move(to: CGPoint(x: 20, y: topLineY))
+    cgContext.addLine(to: CGPoint(x: pageSize.width - 20, y: topLineY))
+    cgContext.strokePath()
+    
+    // Draw the bottom footer line.
+    let bottomLineY: CGFloat = pageSize.height - 40
+    cgContext.move(to: CGPoint(x: 20, y: bottomLineY))
+    cgContext.addLine(to: CGPoint(x: pageSize.width - 20, y: bottomLineY))
+    cgContext.strokePath()
+    
+    // Draw the page number in the bottom right corner.
+    let pageNumberString = "\(pageNumber)"
+    let pageNumberAttributes: [NSAttributedString.Key: Any] = [
+         .font: UIFont.systemFont(ofSize: 12),
+         .foregroundColor: UIColor.black
+    ]
+    let pageNumberSize = pageNumberString.size(withAttributes: pageNumberAttributes)
+    let pageNumberRect = CGRect(x: pageSize.width - 20 - pageNumberSize.width,
+                                y: bottomLineY + 5,
+                                width: pageNumberSize.width,
+                                height: pageNumberSize.height)
+    pageNumberString.draw(in: pageNumberRect, withAttributes: pageNumberAttributes)
 }
