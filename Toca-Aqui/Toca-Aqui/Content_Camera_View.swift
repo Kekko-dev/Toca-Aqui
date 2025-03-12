@@ -1,10 +1,9 @@
-//
+
 //  Content.swift
 //  Toca-Aqui
 //
 //  Created by Francesco Silvestro on 21/02/25.
 //
-
 
 import SwiftUI
 import PDFKit
@@ -15,32 +14,31 @@ import SwiftData
 
 struct Content_Camera_View: View {
     @State var recognisedText: String = "Tap the button to scan a document."
-    @State var output: String = ""   // Store model-generated summary
+    @State var output: String = ""   // This will store the model-generated summary.
     @State private var pdfFile: PDFFile?
     @State private var showScanner: Bool = false
-    @State private var downloadProgress: Double = 0.0  // Stato per la barra di progresso
-
-    // Bottom sheet state
+    // Bottom sheet state:
     @State private var sheetOffset: CGFloat = UIScreen.main.bounds.height * 0.9 - 100
+    
     private var maxHeight: CGFloat { UIScreen.main.bounds.height * 0.9 }
     private let minHeight: CGFloat = 100
     private let bottomMargin: CGFloat = 30
     
     @State var documentName: String = ""
+    
+    
     @State var structuredText: [(text: String, isTitle: Bool)] = []
     
-    
-    @State var downloadProgress: Double = 0
+    @State var downloadProgress: Double = 0.0
+    @State var isDownloading: Bool = false
     
     
     @Environment(\.modelContext) private var modelContext
-
+    
     var body: some View {
         ZStack {
-            Color.purple.ignoresSafeArea()
-                .zIndex(-20)
             
-            NavigationStack {
+            NavigationView {
                 ZStack {
                     Color.purple.edgesIgnoringSafeArea(.all)
                         .opacity(0.1)
@@ -50,7 +48,6 @@ struct Content_Camera_View: View {
                             showScanner = true
                         }) {
                             Image(systemName: "camera.fill")
-                            
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 90, height: 90)
@@ -60,53 +57,40 @@ struct Content_Camera_View: View {
                                         .fill(Color.white)
                                         .shadow(radius: 10)
                                 }
-                                .foregroundStyle(.purple)
                             
                         }
                     }
-                }
-                .padding()
-                .sheet(isPresented: $showScanner) {
-                    ScanDocumentView(recognisedText: $recognisedText, structuredText: $structuredText)
-                }
-                .onChange(of: recognisedText) { _, newValue in
-                    guard newValue != "Tap the button to scan a document." else { return }
-                    Task {
-                        // Chiamata alla funzione con il binding della progress bar
-                        try await generate(structuredText: structuredText, downloadProgress: $downloadProgress)
-                        print("Model output: \(output)")
-                        
-                        if downloadProgress > 0.0 && downloadProgress < 1.0 {
-                            VStack {
-                                Text("Downloading model...")
-                                    .font(.caption)
-                                ProgressView(value: downloadProgress, total: 1.0)
-                                    .progressViewStyle(LinearProgressViewStyle())
-                                    .padding(.horizontal, 40)
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .foregroundStyle(.purple)
                     
-                    
+                    .padding()
                     
                     
                     .sheet(isPresented: $showScanner) {
                         ScanDocumentView(recognisedText: $recognisedText, structuredText: $structuredText)
                     }
                     
-                    
                     .onChange(of: recognisedText) { _, newValue in
                         guard newValue != "Tap the button to scan a document." else { return }
                         Task {
-                            // Call your summarization model function using the structured text.
-                            try await generate(structuredText: structuredText, downloadProgress: .constant(1.0))
+                            await MainActor.run {
+                                isDownloading = true
+                                downloadProgress = 0.0
+                            }
+                            // Call your summarization model function using a binding for progress.
+                            try await generate(structuredText: structuredText, downloadProgress: $downloadProgress)
                             try await Task.sleep(nanoseconds: 1_000_000_000)
                             print("Model output: \(output)")
-                            // Generate a PDF using the structured text (which preserves titles and paragraphs).
+                            
+                            // Generate a PDF from the structured text.
                             if let pdfURL = generateStructuredPDF(textSections: structuredText) {
                                 try await Task.sleep(nanoseconds: 2_500_000_000)
-                                pdfFile = PDFFile(url: pdfURL)
+                                await MainActor.run {
+                                    pdfFile = PDFFile(url: pdfURL)
+                                }
+                            }
+                            await MainActor.run {
+                                downloadProgress = 1.0
+                                isDownloading = false
                             }
                         }
                     }
@@ -118,9 +102,9 @@ struct Content_Camera_View: View {
                 }
             }
             
-            .background(.purple)
-            .ignoresSafeArea()
-            
+            if isDownloading {
+                LoadingScreen(isDownloading: $isDownloading,downloadProgress: $downloadProgress)
+            }
             
             // Persistent bottom sheet showing the saved PDFs.
             DraggableBottomSheet(
@@ -130,6 +114,7 @@ struct Content_Camera_View: View {
                 bottomMargin: bottomMargin
             ) {
                 VStack(alignment: .leading, spacing: 8) {
+                    // Header with "Documents" and the icon.
                     HStack {
                         Text("Documents")
                             .font(.headline)
@@ -149,9 +134,8 @@ struct Content_Camera_View: View {
                 }
                 .padding(.top, 8)
             }
-            .foregroundStyle(.purple)
         }
-        
+        .foregroundStyle(.purple)
         
     }
 }
