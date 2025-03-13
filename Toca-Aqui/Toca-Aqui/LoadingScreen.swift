@@ -6,24 +6,57 @@
 //
 import SwiftUI
 
+import Lottie
+
 struct LoadingScreen: View {
     @Binding var isDownloading: Bool
     @Binding var downloadProgress: Double
     @Binding var statusMessage: String
     
+    @State private var animationView = LottieAnimationView()//var per l'anim
+    
     var body: some View {
         if isDownloading {
-            VStack(spacing: 8) {
-                Text(statusMessage)
+            HStack(spacing: 8) {
+                
+                LottieViewRepresentable(animation: .named("origoLoadAnim")!)
+                                        .frame(width: 25, height: 25)  // Aggiungiamo un frame per ridurre la dimensione
+                                        .scaleEffect(0.05)  // Ulteriore riduzione delle dimensioni
+                                        .scaledToFit()
+                                    
+                Text("\(statusMessage) \(downloadProgress)%")
                     .font(.caption)
-                ProgressView(value: downloadProgress, total: 2.0)
+                
+                
+                
+                /*
+                 progress bar not needed?
+                 progressView(value: downloadProgress, total: 2.0)
                     .progressViewStyle(LinearProgressViewStyle())
                     .padding(.horizontal, 40)
+                 */
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.white.opacity(0.8))
             .edgesIgnoringSafeArea(.all)
         }
+    }
+}
+
+
+/*I need to use LottieViewRepresentable e not LottieView simply
+ because the second one in not integrated in SwwiftUI*/
+struct LottieViewRepresentable: UIViewRepresentable {
+    var animation: LottieAnimation
+    
+    func makeUIView(context: Context) -> LottieAnimationView {
+        let animationView = LottieAnimationView(animation: animation)
+        animationView.loopMode = .loop//anim va in  loop
+        return animationView
+    }
+    
+    func updateUIView(_ uiView: LottieAnimationView, context: Context) {
+        uiView.play()// fa partire animazione con l'apparizione della view
     }
 }
 
