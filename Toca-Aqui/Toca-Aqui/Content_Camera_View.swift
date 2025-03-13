@@ -81,8 +81,8 @@ struct Content_Camera_View: View {
                                                  downloadProgress: $downloadProgress)
                             
                             await MainActor.run {
-                                downloadProgress = 1.0
-                                statusMessage = "Creating pdf"
+                                downloadProgress = 0.0
+                                statusMessage = "Refactoring text and creating pdf"
                             }
                             
                             // Phase 2: Create the PDF.

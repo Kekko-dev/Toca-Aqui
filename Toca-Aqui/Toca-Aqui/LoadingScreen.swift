@@ -17,24 +17,24 @@ struct LoadingScreen: View {
     
     var body: some View {
         if isDownloading {
-            HStack(spacing: 8) {
-                
+            VStack(spacing: 15) {
+         Spacer()
                 LottieViewRepresentable(animation: .named("origoLoadAnim")!)
-                                        .frame(width: 25, height: 25)  // Aggiungiamo un frame per ridurre la dimensione
+                    .frame(width: 50, height: 50)  // Aggiungiamo un frame per ridurre la dimensione
                                         .scaleEffect(0.05)  // Ulteriore riduzione delle dimensioni
-                                        .scaledToFit()
+                                        .scaledToFill()
+                                        .padding()
+            
                                     
-                Text("\(statusMessage) \(downloadProgress)%")
+                Text("\(statusMessage) \(Int(downloadProgress*100))%")
                     .font(.caption)
                 
-                
-                
-                /*
-                 progress bar not needed?
-                 progressView(value: downloadProgress, total: 2.0)
+
+                 ProgressView(value: downloadProgress, total: 1.0)
                     .progressViewStyle(LinearProgressViewStyle())
                     .padding(.horizontal, 40)
-                 */
+                    .tint(Color.church_purple_color)
+                Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.white.opacity(0.8))
