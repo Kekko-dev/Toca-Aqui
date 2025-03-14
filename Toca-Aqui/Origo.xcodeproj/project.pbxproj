@@ -13,6 +13,7 @@
 		61BC52532D71A756005981D6 /* MLXFast in Frameworks */ = {isa = PBXBuildFile; productRef = 61BC52522D71A756005981D6 /* MLXFast */; };
 		61BC52552D71A756005981D6 /* MLXLinalg in Frameworks */ = {isa = PBXBuildFile; productRef = 61BC52542D71A756005981D6 /* MLXLinalg */; };
 		61BC52572D71A756005981D6 /* MLXNN in Frameworks */ = {isa = PBXBuildFile; productRef = 61BC52562D71A756005981D6 /* MLXNN */; };
+		6D784D272D82D7B60014B53B /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 6D784D262D82D7B60014B53B /* Lottie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6105178E2D75B20900C02AE8 /* MLXLLM in Frameworks */,
+				6D784D272D82D7B60014B53B /* Lottie in Frameworks */,
 				61BC52532D71A756005981D6 /* MLXFast in Frameworks */,
 				61BC52552D71A756005981D6 /* MLXLinalg in Frameworks */,
 				61BC524F2D71A756005981D6 /* MLX in Frameworks */,
@@ -94,6 +96,7 @@
 				61BC52542D71A756005981D6 /* MLXLinalg */,
 				61BC52562D71A756005981D6 /* MLXNN */,
 				6105178D2D75B20900C02AE8 /* MLXLLM */,
+				6D784D262D82D7B60014B53B /* Lottie */,
 			);
 			productName = "Toca-Aqui";
 			productReference = 610479462D688C7D004BE669 /* Origo.app */;
@@ -127,6 +130,7 @@
 			packageReferences = (
 				61BC524D2D71A756005981D6 /* XCRemoteSwiftPackageReference "mlx-swift" */,
 				6105178C2D75B20900C02AE8 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */,
+				6D784D252D82D7B60014B53B /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 610479472D688C7D004BE669 /* Products */;
@@ -290,7 +294,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Toca-Aqui/Preview Content\"";
-				DEVELOPMENT_TEAM = 2ZUKF3C2AM;
+				DEVELOPMENT_TEAM = 79DJA69MKY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app uses the camera to scan portions of text, helping to create a grammar document optimized for LIS (Italian Sign Language). Camera access is essential for this feature.";
@@ -320,7 +324,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Toca-Aqui/Preview Content\"";
-				DEVELOPMENT_TEAM = 2ZUKF3C2AM;
+				DEVELOPMENT_TEAM = 79DJA69MKY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app uses the camera to scan portions of text, helping to create a grammar document optimized for LIS (Italian Sign Language). Camera access is essential for this feature.";
@@ -382,6 +386,14 @@
 				minimumVersion = 0.21.3;
 			};
 		};
+		6D784D252D82D7B60014B53B /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -414,6 +426,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 61BC524D2D71A756005981D6 /* XCRemoteSwiftPackageReference "mlx-swift" */;
 			productName = MLXNN;
+		};
+		6D784D262D82D7B60014B53B /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6D784D252D82D7B60014B53B /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
