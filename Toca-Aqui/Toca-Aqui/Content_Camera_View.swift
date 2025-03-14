@@ -67,26 +67,26 @@ struct Content_Camera_View: View {
                 .foregroundStyle(Color.church_purple_color)
                 .padding()
                 // Process the scanned text once recognisedText is updated.
-                .onChange(of: recognisedText) { newValue in
+                .onChange(of: recognisedText) { _, newValue in
                     if newValue != "Tap the button to scan a document." {
                         Task {
-                            await MainActor.run {
+                            
                                 isDownloading = true
                                 downloadProgress = 0.0
                                 statusMessage = "Downloading the Model"
-                            }
+                            
                             
                             // Phase 1: Download the model.
                             try await generate(structuredText: structuredText,
                                                  downloadProgress: $downloadProgress)
                             
-                            await MainActor.run {
+                            
                                 downloadProgress = 1.0
                                 statusMessage = "Creating pdf"
-                            }
+                            
                             
                             // Phase 2: Create the PDF.
-                            if let pdfURL = generateStructuredPDF(textSections: structuredText, documentName: "Origo", documentDate: Date(), icon: UIImage(named: "Layout_Icon") ) {
+                            if let pdfURL = generateStructuredPDF(textSections: structuredText, documentName: "Origo", documentDate: Date(), icon: UIImage(systemName: "bird") ) {
                                 for progress in stride(from: 1.0, through: 2.0, by: 0.1) {
                                     
                                         downloadProgress = progress
@@ -136,9 +136,14 @@ struct Content_Camera_View: View {
                                     .foregroundColor(.white)
                                     .padding(.leading, 20)
                                 Spacer()
-                                Image(systemName: "book")
-                                    .padding(.trailing, 30)
-                                    .containerShape(Circle())
+                                Button(action: {
+                                    sheetOffset = -maxHeight + 750
+                                }) {
+                                    Image(systemName: "bird")
+                                        .font(.title) // adjust as needed
+                                }
+                                .padding(.trailing, 30)
+                                .containerShape(Circle())
                             }
                             SavedPDFsView()
                                 .modelContainer(modelContext.container)
@@ -157,4 +162,7 @@ struct Content_Camera_View: View {
 
 extension Color {
     static let church_purple_color: Color = Color(red: 134/255, green: 59/255, blue: 158/255)
+    static let church_red_color: Color = Color(red: 239/255, green: 28/255, blue: 25/255)
+    static let church_green_color: Color = Color(red: 88/255, green: 187/255, blue: 134/255)
+
 }
