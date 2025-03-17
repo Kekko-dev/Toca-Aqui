@@ -11,25 +11,20 @@ import SwiftData
 @main
 struct TocAquiApp: App {
     var sharedModelContainer: ModelContainer
-    /*
-     Creates a shared SwiftData container.
-     This stores all saved PDFs.
-     It is accessible throughout the app.
-     */
 
     init() {
         do {
-            let schema = Schema([SavedPDF.self]) //Registers the SavedPDF model so SwiftData knows what data to store.
-            sharedModelContainer = try ModelContainer(for: schema) // Creates the database container.
+            let schema = Schema([SavedPDF.self])
+            sharedModelContainer = try ModelContainer(for: schema)
         } catch {
-            fatalError(" Failed to initialize SwiftData: \(error)") // If SwiftData fails to load, the app crashes with an error message.
+            fatalError("Failed to initialize SwiftData: \(error)")
         }
     }
 
     var body: some Scene {
         WindowGroup {
-            Content_Camera_View()
-                .modelContainer(sharedModelContainer) // Makes database accessible throughout the app.
+            RootView()
+                .modelContainer(sharedModelContainer)
         }
     }
 }
