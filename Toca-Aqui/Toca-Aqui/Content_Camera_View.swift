@@ -86,7 +86,7 @@ struct Content_Camera_View: View {
                             
                             
                             // Phase 2: Create the PDF.
-                            if let pdfURL = generateStructuredPDF(textSections: structuredText, documentName: "Origo", documentDate: Date(), icon: UIImage(systemName: "bird") ) {
+                            if let pdfURL = generateStructuredPDF(textSections: structuredText, documentName: "Origo", documentDate: Date(), logo: UIImage(contentsOfFile: "Logo_Purple") ) {
                                 for progress in stride(from: 1.0, through: 2.0, by: 0.1) {
                                     
                                         downloadProgress = progress
@@ -139,7 +139,7 @@ struct Content_Camera_View: View {
                                 Button(action: {
                                     sheetOffset = -maxHeight + 750
                                 }) {
-                                    Image(systemName: "bird")
+                                    Image("Bell")
                                         .font(.title) // adjust as needed
                                 }
                                 .padding(.trailing, 30)

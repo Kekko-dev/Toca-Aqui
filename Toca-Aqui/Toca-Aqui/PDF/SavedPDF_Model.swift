@@ -564,7 +564,7 @@ import CoreText
 /// Classifies text as a *Title* or *Body* based on heuristics
 func classifyText(_ text: String) -> NSAttributedString {
     let paragraphStyle = NSMutableParagraphStyle()
-    paragraphStyle.alignment = .left
+    paragraphStyle.alignment = .justified
     paragraphStyle.lineBreakMode = .byWordWrapping
 
     let attributes: [NSAttributedString.Key: Any]
@@ -752,11 +752,10 @@ func generateStyledPDF(text: String) -> URL? {
  }
  }
  */
-
 func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)],
                            documentName: String,
                            documentDate: Date,
-                           icon: UIImage?) -> URL? {
+                           logo: UIImage?) -> URL? {
     let fileName = "Structured_Scanned_Document_\(UUID().uuidString).pdf"
     let pdfURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                         .appendingPathComponent(fileName)
@@ -770,33 +769,39 @@ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)],
         try renderer.writePDF(to: pdfURL, withActions: { pdfContext in
             // Start a new page and draw the header/footer layout.
             pdfContext.beginPage()
+            let logoImage = UIImage(named: "Logo_Purple")
             drawPageLayout(in: pdfContext,
                            pageSize: pageSize,
                            pageNumber: pageNumber,
-                           documentName: documentName,
                            documentDate: documentDate,
-                           icon: icon)
+                           logo: logoImage)
             
-            // Adjust your content's starting yOffset to leave room for the header.
-            var yOffset: CGFloat = 40   // Start below the header
+            // Start the content lower to allow space for the header.
+            // We'll adjust the very first block if it's a title.
+            var yOffset: CGFloat = 100   // Default starting offset.
             let xOffset: CGFloat = 20
             let maxWidth: CGFloat = pageSize.width - 40
             let spacingAfterBlock: CGFloat = 10
+            
+            // Flag to detect the first title block.
+            var isFirstTitleProcessed = false
             
             var i = 0
             while i < textSections.count {
                 var attrStr: NSAttributedString
                 var blockHeight: CGFloat = 0
                 
-                // Combine a title and its following body, if applicable.
                 if i < textSections.count - 1 && textSections[i].isTitle && !textSections[i+1].isTitle {
+                    // Combining a title and its following body.
                     let combinedAttributedString = NSMutableAttributedString()
                     
+                    // Use a larger font for the first title if not already processed.
+                    let titleFontSize: CGFloat = (!isFirstTitleProcessed) ? 28 : 22
                     let titleAttributes: [NSAttributedString.Key: Any] = [
-                        .font: UIFont.boldSystemFont(ofSize: 22),
+                        .font: UIFont.boldSystemFont(ofSize: titleFontSize),
                         .paragraphStyle: {
                             let ps = NSMutableParagraphStyle()
-                            ps.alignment = .left
+                            ps.alignment = .justified
                             ps.lineBreakMode = .byWordWrapping
                             return ps
                         }()
@@ -805,7 +810,7 @@ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)],
                         .font: UIFont.systemFont(ofSize: 16),
                         .paragraphStyle: {
                             let ps = NSMutableParagraphStyle()
-                            ps.alignment = .left
+                            ps.alignment = .justified
                             ps.lineBreakMode = .byWordWrapping
                             return ps
                         }()
@@ -818,37 +823,61 @@ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)],
                     combinedAttributedString.append(NSAttributedString(string: bodyText, attributes: bodyAttributes))
                     
                     let constraintRect = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
-                    blockHeight = ceil(combinedAttributedString.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil).height)
+                    blockHeight = ceil(combinedAttributedString.boundingRect(with: constraintRect,
+                                                                              options: .usesLineFragmentOrigin,
+                                                                              context: nil).height)
                     attrStr = combinedAttributedString
+                    isFirstTitleProcessed = true
                     i += 2
                 } else {
+                    // Process a single block.
                     let block = textSections[i]
-                    let attributes: [NSAttributedString.Key: Any] = [
-                        .font: block.isTitle ? UIFont.boldSystemFont(ofSize: 22) : UIFont.systemFont(ofSize: 16),
-                        .paragraphStyle: {
-                            let ps = NSMutableParagraphStyle()
-                            ps.alignment = .left
-                            ps.lineBreakMode = .byWordWrapping
-                            return ps
-                        }()
-                    ]
+                    let attributes: [NSAttributedString.Key: Any]
+                    if i == 0 && block.isTitle {
+                        // First block is a title: use a larger font.
+                        attributes = [
+                            .font: UIFont.boldSystemFont(ofSize: 28),
+                            .paragraphStyle: {
+                                let ps = NSMutableParagraphStyle()
+                                ps.alignment = .justified
+                                ps.lineBreakMode = .byWordWrapping
+                                return ps
+                            }()
+                        ]
+                        isFirstTitleProcessed = true
+                        // Adjust the starting yOffset to draw this block higher.
+                        // For example, if default is 100, you can reduce it:
+                        yOffset = 60
+                    } else {
+                        attributes = [
+                            .font: block.isTitle ? UIFont.boldSystemFont(ofSize: 22) : UIFont.systemFont(ofSize: 16),
+                            .paragraphStyle: {
+                                let ps = NSMutableParagraphStyle()
+                                ps.alignment = .justified
+                                ps.lineBreakMode = .byWordWrapping
+                                return ps
+                            }()
+                        ]
+                    }
+                    
                     attrStr = NSAttributedString(string: block.text, attributes: attributes)
                     let constraintRect = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
-                    blockHeight = ceil(attrStr.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil).height)
+                    blockHeight = ceil(attrStr.boundingRect(with: constraintRect,
+                                                             options: .usesLineFragmentOrigin,
+                                                             context: nil).height)
                     i += 1
                 }
                 
                 // If not enough space for the block, start a new page.
-                if yOffset + blockHeight + spacingAfterBlock > pageSize.height - 50 { // 50 points reserved for footer area
+                if yOffset + blockHeight + spacingAfterBlock > pageSize.height - 50 {
                     pdfContext.beginPage()
                     pageNumber += 1
                     drawPageLayout(in: pdfContext,
                                    pageSize: pageSize,
                                    pageNumber: pageNumber,
-                                   documentName: documentName,
                                    documentDate: documentDate,
-                                   icon: icon)
-                    yOffset = 40  // Reset yOffset on the new page
+                                   logo: logo)
+                    yOffset = 100
                 }
                 
                 let textRect = CGRect(x: xOffset, y: yOffset, width: maxWidth, height: blockHeight)
@@ -874,44 +903,20 @@ func generateStructuredPDF(textSections: [(text: String, isTitle: Bool)],
 func drawPageLayout(in context: UIGraphicsPDFRendererContext,
                     pageSize: CGSize,
                     pageNumber: Int,
-                    documentName: String,
                     documentDate: Date,
-                    icon: UIImage?) {
+                    logo: UIImage?) {
     let cgContext = context.cgContext
-    
-    // Increase the line width for thicker lines.
     cgContext.setLineWidth(2.0)
     cgContext.setStrokeColor(UIColor.black.cgColor)
     
-    // Header area for document name and icon.
-    let headerAreaTop: CGFloat = 10       // Top margin for header elements.
-    let headerAreaBottom: CGFloat = 30    // Bottom boundary for header elements.
-    
-    // Draw the document name on the top left.
-    let nameAttributes: [NSAttributedString.Key: Any] = [
-         .font: UIFont.systemFont(ofSize: 14),
-         .foregroundColor: UIColor.black
-    ]
-    let nameX: CGFloat = 25  // Left margin offset.
-    let nameY: CGFloat = headerAreaTop  // Place it at the very top.
-    let nameSize = documentName.size(withAttributes: nameAttributes)
-    let nameRect = CGRect(x: nameX, y: nameY, width: nameSize.width, height: nameSize.height)
-    documentName.draw(in: nameRect, withAttributes: nameAttributes)
-    
-    // Draw the icon on the top right.
-    if let icon = icon {
-        let iconSize = CGSize(width: 24, height: 24) // Adjust as needed.
-        let iconX = pageSize.width - 20 - iconSize.width  // Right margin offset.
-        let iconY = headerAreaTop  // Align with document name.
-        let iconRect = CGRect(x: iconX, y: iconY, width: iconSize.width, height: iconSize.height)
-        icon.draw(in: iconRect)
+    // Draw the app logo in the top right corner with extra margin and 50% opacity.
+    if let logo = logo {
+        let logoSize = CGSize(width: 80, height: 80) // Adjust size as needed.
+        let logoX = pageSize.width - 40 - logoSize.width  // 40 points margin from the right.
+        let logoY: CGFloat = 30  // 40 points from the top edge.
+        let logoRect = CGRect(x: logoX, y: logoY, width: logoSize.width, height: logoSize.height)
+        logo.draw(in: logoRect, blendMode: .normal, alpha: 0.5)
     }
-    
-    // Draw the top horizontal line below the header area.
-    let topLineY: CGFloat = headerAreaBottom + 5  // e.g., at y = 35
-    cgContext.move(to: CGPoint(x: 20, y: topLineY))
-    cgContext.addLine(to: CGPoint(x: pageSize.width - 20, y: topLineY))
-    cgContext.strokePath()
     
     // Draw the bottom horizontal line.
     let bottomLineY: CGFloat = pageSize.height - 40
@@ -919,25 +924,25 @@ func drawPageLayout(in context: UIGraphicsPDFRendererContext,
     cgContext.addLine(to: CGPoint(x: pageSize.width - 20, y: bottomLineY))
     cgContext.strokePath()
     
-    // Format and draw the document date in the bottom left corner.
+    // Draw the document date on the bottom left.
     let dateFormatter = DateFormatter()
-    dateFormatter.locale = Locale.current  // Ensures the formatter uses the device's locale.
+    dateFormatter.locale = Locale.current
     dateFormatter.dateStyle = .medium
     dateFormatter.timeStyle = .short
     let dateString = dateFormatter.string(from: documentDate)
     let dateAttributes: [NSAttributedString.Key: Any] = [
-         .font: UIFont.systemFont(ofSize: 12),
-         .foregroundColor: UIColor.black
+        .font: UIFont.systemFont(ofSize: 12),
+        .foregroundColor: UIColor.black
     ]
     let dateSize = dateString.size(withAttributes: dateAttributes)
     let dateRect = CGRect(x: 20, y: bottomLineY + 5, width: dateSize.width, height: dateSize.height)
     dateString.draw(in: dateRect, withAttributes: dateAttributes)
     
-    // Draw the page number in the bottom right corner.
+    // Draw the page number on the bottom right.
     let pageNumberString = "\(pageNumber)"
     let pageNumberAttributes: [NSAttributedString.Key: Any] = [
-         .font: UIFont.systemFont(ofSize: 12),
-         .foregroundColor: UIColor.black
+        .font: UIFont.systemFont(ofSize: 12),
+        .foregroundColor: UIColor.black
     ]
     let pageNumberSize = pageNumberString.size(withAttributes: pageNumberAttributes)
     let pageNumberRect = CGRect(x: pageSize.width - 20 - pageNumberSize.width,
