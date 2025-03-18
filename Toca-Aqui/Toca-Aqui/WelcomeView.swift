@@ -13,7 +13,7 @@ struct WelcomeView: View {
             
             Color.church_purple_color
                 .ignoresSafeArea()
-                .opacity(0.1)
+                .opacity(0.15)
             
            
             VStack {
@@ -28,6 +28,7 @@ struct WelcomeView: View {
                     .frame(width: 200, height: 200)
                 Spacer()
             }
+            .shadow(radius: 1)
         }
     }
 }
