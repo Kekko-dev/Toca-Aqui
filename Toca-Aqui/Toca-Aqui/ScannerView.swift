@@ -353,6 +353,85 @@ struct ScanDocumentView: UIViewControllerRepresentable {
         @Binding var structuredText: [(text: String, isTitle: Bool)]
         var parent: ScanDocumentView
         
+        // Dictionary to map original text to LIS-friendly versions
+        let lisTextMapping: [String: String] = [
+            """
+            RITI DI ACCOGLIENZA
+            ANTIFONA D'INGRESSO
+            Cantate al Signore un canto nuovo, can-
+            tate al Signore, uomini di tutta la terra.
+            Maestà conore sono davanti a lui, forza
+            e splendore nel suo santuario.
+            Cel. Nel nome del Padre e del Figlio e del-
+            lo Spirito Santo.
+            Ass. Amen.
+            Cel. Il Signore, che guida i nostri cuori
+            all'amore e alla pazienza di Cristo, sia con
+            tutti voi.
+            Ass. E con il tuo spirito.
+            ATTO PENITENZIALE
+            Cel. Fratelli e sorelle, all'inizio di questa
+            celebrazione eucaristica, invochiamo la
+            misericordia di Dio, fonte di riconciliazio-
+            ne e di comunione.
+            Segue una breve pausa di silenzio.
+            Cel. Pietà di noi, Signore.
+            Ass. Contro di te abbiamo peccato.
+            Cel. Mostraci, Signore, la tua misericordia.
+            Ass. E donaci la tua salvezza.
+            Cel. Dio onnipotente abbia misericordia di
+            noi, perdoni i nostri peccati e ci conduca
+            alla vita eterna.
+            Cel. Kýrie, eléison.
+            Cel. Christe, eléison.
+            Cel. Kýrie, eléison.
+            Ass. Amen.
+            Ass. Kýrie, eléison.
+            Ass. Christe, eléison.
+            Ass. Kýrie, eléison.
+            """:
+            """
+            **RITI DI ACCOGLIENZA**
+
+            **CANTO DI INGRESSO**  
+            Cantiamo un canto nuovo per Dio.  
+            Tutte le persone della terra lodino Dio.  
+            Dio è grande e potente.  
+            Dio è pieno di luce e bellezza.  
+
+             
+            Sacerdote: Nel nome del Padre, del Figlio e dello Spirito Santo.  
+            Assemblea: Amen.  
+
+            Sacerdote: Il Signore ci aiuta ad amare e ad avere pazienza, sia con tutti voi.  
+            Assemblea: E con il tuo spirito.  
+
+
+            **ATTO PENITENZIALE**  
+            Sacerdote: Fratelli e sorelle, prima di iniziare la preghiera, chiediamo perdono a Dio per i nostri errori. Dio ci ama e ci perdona.  
+
+            (Silenzio per riflettere)  
+
+            Sacerdote: Signore, abbi pietà di noi.  
+            Assemblea: Abbiamo sbagliato contro di te.  
+
+            Sacerdote: Signore, mostraci il tuo amore.  
+            Assemblea: Donaci il tuo perdono.  
+
+            Sacerdote: Dio è buono. Lui ci perdona e ci dà la vita eterna.  
+
+            Sacerdote: Signore, abbi pietà.  
+            Assemblea: Signore, abbi pietà.  
+
+            Sacerdote: Cristo, abbi pietà.  
+            Assemblea: Cristo, abbi pietà.  
+
+            Sacerdote: Signore, abbi pietà.  
+            Assemblea: Signore, abbi pietà.
+            """
+        ]
+        
+        
         init(recognisedText: Binding<String>,
              structuredText: Binding<[(text: String, isTitle: Bool)]>,
              parent: ScanDocumentView) {
@@ -389,6 +468,7 @@ struct ScanDocumentView: UIViewControllerRepresentable {
         }
         
         // Helper: Recognize structured text from the images.
+        /*
         private func recognizeStructuredText(from images: [CGImage]) -> [(text: String, isTitle: Bool)] {
             var globalResult: [(text: String, isTitle: Bool)] = []
             for image in images {
@@ -431,7 +511,121 @@ struct ScanDocumentView: UIViewControllerRepresentable {
                 globalResult.append(contentsOf: groupedResult)
             }
             return globalResult
+        }*/
+        
+        private func recognizeStructuredText(from images: [CGImage]) -> [(text: String, isTitle: Bool)] {
+            var globalResult: [(text: String, isTitle: Bool)] = []
+            
+            // Process each image one by one.
+            for image in images {
+                var observationsArray: [(String, Bool)] = []
+                let semaphore = DispatchSemaphore(value: 0)
+                
+                let request = VNRecognizeTextRequest { request, error in
+                    defer { semaphore.signal() }
+                    guard let observations = request.results as? [VNRecognizedTextObservation], error == nil else { return }
+                    for observation in observations {
+                        if let topCandidate = observation.topCandidates(1).first {
+                            let text = topCandidate.string
+                            let titleFlag = self.isLikelyTitle(text)
+                            observationsArray.append((text, titleFlag))
+                        }
+                    }
+                }
+                
+                request.recognitionLevel = .accurate
+                request.usesLanguageCorrection = true
+                
+                let handler = VNImageRequestHandler(cgImage: image, options: [:])
+                try? handler.perform([request])
+                semaphore.wait()  // Wait until text recognition completes
+                
+                // Group consecutive non-title observations into paragraphs.
+                var groupedResult: [(text: String, isTitle: Bool)] = []
+                var currentParagraph = ""
+                
+                for (text, isTitle) in observationsArray {
+                    if isTitle {
+                        if !currentParagraph.isEmpty {
+                            groupedResult.append((currentParagraph, false))
+                            currentParagraph = ""
+                        }
+                        groupedResult.append((text, true))
+                    } else {
+                        if currentParagraph.isEmpty {
+                            currentParagraph = text
+                        } else {
+                            currentParagraph += " " + text
+                        }
+                    }
+                }
+                if !currentParagraph.isEmpty {
+                    groupedResult.append((currentParagraph, false))
+                }
+                
+                globalResult.append(contentsOf: groupedResult)
+            }
+            
+            // Combine all recognized text into one single block.
+            let fullScannedText = globalResult.map { $0.text }.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            // Normalize the scanned text.
+            let normalizedScannedText = normalizeText(fullScannedText)
+            print("Normalized Scanned Text:\n\(normalizedScannedText)")
+            
+            // Check the mapping dictionary using fuzzy word matching.
+            for (original, lisVersion) in lisTextMapping {
+                let normalizedOriginal = normalizeText(original)
+                print("Normalized Expected Text:\n\(normalizedOriginal)")
+                
+                let expectedWords = normalizedOriginal.split(separator: " ")
+                let scannedWords = normalizedScannedText.split(separator: " ")
+                let commonWords = expectedWords.filter { scannedWords.contains($0) }
+                let ratio = Double(commonWords.count) / Double(expectedWords.count)
+                print("Fuzzy match ratio: \(ratio)")
+                
+                if ratio >= 0.7 {  // if at least 70% of the expected words are found
+                    print("Fuzzy match found (ratio \(ratio)). Returning structured LIS-friendly version.")
+                    return parseStructuredLIS(lisVersion)
+                }
+            }
+            
+            // If no fuzzy match is found, return the structured result as usual.
+            return globalResult
         }
+        
+        private func parseStructuredLIS(_ text: String) -> [(text: String, isTitle: Bool)] {
+            var blocks: [(String, Bool)] = []
+            // Split the text into lines.
+            let lines = text.components(separatedBy: "\n")
+            
+            // Process each line.
+            for line in lines {
+                let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmed.isEmpty else { continue }
+                
+                // If the line starts and ends with "**", consider it a title.
+                if trimmed.hasPrefix("**") && trimmed.hasSuffix("**") {
+                    let title = trimmed.replacingOccurrences(of: "**", with: "").trimmingCharacters(in: .whitespaces)
+                    blocks.append((title, true))
+                } else {
+                    // Otherwise, treat it as a body text block.
+                    blocks.append((trimmed, false))
+                }
+            }
+            return blocks
+        }
+        
+        private func normalizeText(_ text: String) -> String {
+            // Remove hyphenated line breaks.
+            let withoutHyphenLineBreaks = text.replacingOccurrences(of: "-\n", with: "")
+            // Replace newlines with a space.
+            let withoutNewlines = withoutHyphenLineBreaks.replacingOccurrences(of: "\n", with: " ")
+            // Reduce multiple spaces and trim.
+            let trimmed = withoutNewlines.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines)
+            return trimmed.lowercased()
+        }
+    
         
         private func isLikelyTitle(_ text: String) -> Bool {
             return text.count < 50 && text == text.uppercased()
