@@ -5,20 +5,17 @@
 //  Created by Francesco Silvestro on 06/03/25.
 //
 
-
 import SwiftUI
 import SwiftData
-
+import PDFKit
 
 struct SavedPDFsView: View {
     @Query var savedPDFs: [SavedPDF]
     @Environment(\.modelContext) private var modelContext
-    @State private var selectedPDF: URL?
-    @State private var showPDFViewer = false
     @State private var showRenameAlert = false
     @State private var newDocumentName = ""
     
-    // Define a grid layout
+    // Define a grid layout.
     let columns = [
         GridItem(.adaptive(minimum: 120), spacing: 16)
     ]
@@ -28,10 +25,7 @@ struct SavedPDFsView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(savedPDFs) { pdf in
-                        Button(action: {
-                            selectedPDF = pdf.filePath
-                            showPDFViewer = true
-                        }) {
+                        NavigationLink(destination: PDFViewer(pdfURL: pdf.filePath)) {
                             VStack {
                                 PDFThumbnailView(pdfURL: pdf.filePath)
                                 Text(pdf.fileName)
@@ -39,16 +33,15 @@ struct SavedPDFsView: View {
                                     .lineLimit(1)
                             }
                         }
-                        // Add a context menu to simulate 3D Touch interactions.
                         .contextMenu {
-                            // Delete action
+                            // Delete action.
                             Button(role: .destructive) {
                                 delete(pdf: pdf)
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
                             
-                            // Rename action
+                            // Rename action.
                             Button {
                                 newDocumentName = pdf.fileName
                                 showRenameAlert = true
@@ -56,7 +49,7 @@ struct SavedPDFsView: View {
                                 Label("Rename", systemImage: "pencil")
                             }
                             
-                            // Share action
+                            // Share action.
                             Button {
                                 share(pdf: pdf)
                             } label: {
@@ -66,20 +59,13 @@ struct SavedPDFsView: View {
                     }
                 }
                 .padding()
-                
             }
-            //.frame(width: UIScreen.main.bounds.width, height: .infinity, alignment: .top)
             .background(
                 Rectangle()
                     .fill(Color(UIColor.purple))
                     .opacity(0.3)
                     .ignoresSafeArea()
             )
-            .sheet(isPresented: $showPDFViewer) {
-                if let pdfURL = selectedPDF {
-                    PDFViewer(pdfURL: pdfURL)
-                }
-            }
             // Alert for renaming.
             .alert("Rename Document", isPresented: $showRenameAlert, actions: {
                 TextField("New Name", text: $newDocumentName)
@@ -88,13 +74,11 @@ struct SavedPDFsView: View {
                     renameDocument(newName: newDocumentName)
                 }
             })
+            .navigationTitle("Saved PDFs")
         }
-        
-        
     }
     
     private func delete(pdf: SavedPDF) {
-        // Remove from model and file system.
         modelContext.delete(pdf)
         if FileManager.default.fileExists(atPath: pdf.filePath.path) {
             try? FileManager.default.removeItem(at: pdf.filePath)
@@ -102,20 +86,17 @@ struct SavedPDFsView: View {
     }
     
     private func renameDocument(newName: String) {
-        // Ensure no PDF already has the new name.
         guard savedPDFs.firstIndex(where: { $0.fileName == newName }) == nil else {
             print("A document with this name already exists.")
             return
         }
         
-        // Find the selected PDF in your savedPDFs array.
-        if let selectedPDF = selectedPDF,
-           let pdf = savedPDFs.first(where: { $0.filePath == selectedPDF }) {
+        // Find the PDF to rename.
+        if let pdf = savedPDFs.first(where: { $0.fileName == newDocumentName }) {
             let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let newURL = documentsDirectory.appendingPathComponent(newName)
             do {
                 try FileManager.default.moveItem(at: pdf.filePath, to: newURL)
-                // Update the model with the new file name and path.
                 pdf.fileName = newName
                 pdf.filePathString = newURL.path
             } catch {
@@ -127,7 +108,6 @@ struct SavedPDFsView: View {
     private func share(pdf: SavedPDF) {
         guard let url = URL(string: pdf.filePath.path) else { return }
         let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-        // Present the UIActivityViewController using UIKit.
         UIApplication.shared.windows.first?.rootViewController?.present(activityVC, animated: true)
     }
 }
