@@ -112,6 +112,7 @@ struct Content_Camera_View: View {
                                  fileName: documentName,
                                  context: modelContext)
                     }, documentName: $documentName)
+                    .interactiveDismissDisabled(true)
                 }
                 
                 // Loading overlay.
