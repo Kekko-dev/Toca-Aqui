@@ -14,7 +14,7 @@ The app also features a draggable bottom sheet for managing saved documents, PDF
 - **PDF Viewing:** Integrates PDFKit and QuickLook for displaying generated PDFs.
 - **Custom Animations:** Uses Lottie for animated loading indicators and enforces modal behavior (for example, the PDF preview modal cannot be dismissed interactively, only via a cancel button).
 
-## Architecture and File Structure
+## Architecture and File Structure with a didactical explanation of the code
 
 - **DraggableBottomSheet.swift:**  
   Contains a custom SwiftUI view that creates a draggable bottom sheet. This sheet is used to display saved PDF documents.
