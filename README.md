@@ -1,4 +1,4 @@
- Origo
+# Origo
 
 Origo is an iOS application built with SwiftUI that allows users to scan documents, process the recognized text using an integrated LLM model, and generate structured, formatted PDFs. 
 The app also features a draggable bottom sheet for managing saved documents, PDF viewing using PDFKit and QuickLook, and animated loading states powered by Lottie.
