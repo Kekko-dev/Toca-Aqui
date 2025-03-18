@@ -21,7 +21,7 @@ struct SavedPDFsView: View {
     ]
     
     var body: some View {
-        NavigationView {
+        
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(savedPDFs) { pdf in
@@ -32,7 +32,14 @@ struct SavedPDFsView: View {
                                     .font(.caption)
                                     .lineLimit(1)
                             }
+                            
+                            
+                            
                         }
+                       
+                        
+                        
+                        
                         .contextMenu {
                             // Delete action.
                             Button(role: .destructive) {
@@ -60,12 +67,9 @@ struct SavedPDFsView: View {
                 }
                 .padding()
             }
-            .background(
-                Rectangle()
-                    .fill(Color(UIColor.purple))
-                    .opacity(0.3)
-                    .ignoresSafeArea()
-            )
+            
+
+            
             // Alert for renaming.
             .alert("Rename Document", isPresented: $showRenameAlert, actions: {
                 TextField("New Name", text: $newDocumentName)
@@ -74,8 +78,7 @@ struct SavedPDFsView: View {
                     renameDocument(newName: newDocumentName)
                 }
             })
-            .navigationTitle("Saved PDFs")
-        }
+        
     }
     
     private func delete(pdf: SavedPDF) {
@@ -131,7 +134,7 @@ struct PDFThumbnailView: View {
                     .scaledToFit()
             } else {
                 Color.purple
-                    .opacity(0.2)
+                    .opacity(0.3)
                     .overlay(ProgressView())
                     .onAppear(perform: generateThumbnail)
             }
