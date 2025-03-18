@@ -19,7 +19,7 @@ struct LoadingScreen: View {
         if isDownloading {
             VStack(spacing: 15) {
          Spacer()
-                LottieViewRepresentable(animation: .named("origoLoadAnim")!)
+                LottieViewRepresentable(animationName: "mshk-image-to-lottie")
                     .frame(width: 50, height: 50)  // Aggiungiamo un frame per ridurre la dimensione
                                         .scaleEffect(0.05)  // Ulteriore riduzione delle dimensioni
                                         .scaledToFill()
@@ -46,22 +46,38 @@ struct LoadingScreen: View {
 
 /*I need to use LottieViewRepresentable e not LottieView simply
  because the second one in not integrated in SwwiftUI*/
+import SwiftUI
+import Lottie
+
 struct LottieViewRepresentable: UIViewRepresentable {
-    var animation: LottieAnimation
-    
+    // Define a property for the animation name.
+    var animationName: String
+    var bundle: Bundle = .main
+
     func makeUIView(context: Context) -> LottieAnimationView {
-        let animationView = LottieAnimationView(animation: animation)
-        animationView.loopMode = .loop//anim va in  loop
+        let animationView = LottieAnimationView()
+        // Safely attempt to load the animation.
+        if let animation = LottieAnimation.named(animationName, bundle: bundle) {
+            animationView.animation = animation
+            animationView.loopMode = .loop
+            animationView.play()
+        } else {
+            print("Error: Animation named \(animationName) could not be loaded. Check the file name and target membership.")
+        }
         return animationView
     }
     
     func updateUIView(_ uiView: LottieAnimationView, context: Context) {
-        uiView.play()// fa partire animazione con l'apparizione della view
+        if !uiView.isAnimationPlaying {
+            uiView.play()
+        }
     }
 }
 
-#Preview {
-    LoadingScreen(isDownloading: .constant(true),
-                  downloadProgress: .constant(0.5),
-                  statusMessage: .constant("Downloading the Model"))
+// Preview Provider for testing in Xcode's canvas.
+struct LottieViewRepresentable_Previews: PreviewProvider {
+    static var previews: some View {
+        LottieViewRepresentable(animationName: "mshk-image-to-lottie")
+            .frame(width: 50, height: 50)
+    }
 }
