@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 import PDFKit
 
+
+
 struct SavedPDFsView: View {
     @Query var savedPDFs: [SavedPDF]
     @Environment(\.modelContext) private var modelContext
@@ -119,8 +121,6 @@ struct SavedPDFsView: View {
 }
 
 
-import SwiftUI
-import PDFKit
 
 struct PDFThumbnailView: View {
     let pdfURL: URL
@@ -139,7 +139,7 @@ struct PDFThumbnailView: View {
                     .onAppear(perform: generateThumbnail)
             }
         }
-        .frame(width: 100, height: 140) // Adjust size as needed
+        .frame(width: 100, height: 140)
         .cornerRadius(8)
         .shadow(radius: 2)
     }
