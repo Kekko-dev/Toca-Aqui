@@ -15,7 +15,7 @@ struct PDFKitView: UIViewRepresentable {
     func makeUIView(context: Context) -> UIView {
         // Container view with the desired background.
         let containerView = UIView()
-        containerView.backgroundColor = UIColor.church_purple_color.withAlphaComponent(0.01)
+        containerView.backgroundColor = UIColor.church_purple_color.withAlphaComponent(0.015)
         
         // Create PDFView with clear background.
         let pdfView = PDFView(frame: containerView.bounds)

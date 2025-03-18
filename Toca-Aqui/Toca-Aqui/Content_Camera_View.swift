@@ -40,7 +40,7 @@ struct Content_Camera_View: View {
             ZStack {
                 Color.church_purple_color
                     .edgesIgnoringSafeArea(.all)
-                    .opacity(0.1)
+                    .opacity(0.15)
                 
                 VStack(spacing: 20) {
                     Button(action: {
@@ -133,7 +133,7 @@ struct Content_Camera_View: View {
                             HStack {
                                 Text("Documents")
                                     .font(.headline)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color.church_purple_color)
                                     .padding(.leading, 20)
                                 Spacer()
                                 Button(action: {
