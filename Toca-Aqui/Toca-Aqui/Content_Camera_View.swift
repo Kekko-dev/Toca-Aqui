@@ -18,6 +18,7 @@ struct Content_Camera_View: View {
     
     // States for loading & progress.
     @State private var downloadProgress: Double = 0.0
+    @State private var reducingText: Double = 0.0
     @State private var isDownloading: Bool = false
     @State private var statusMessage: String = "Downloading the Model"
     
@@ -82,7 +83,7 @@ struct Content_Camera_View: View {
                             
                             
                                 downloadProgress = 1.0
-                                statusMessage = "Creating pdf"
+                                statusMessage = "Origo is making your text accessible"
                             
                             
                             // Phase 2: Create the PDF.

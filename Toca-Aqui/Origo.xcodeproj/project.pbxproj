@@ -294,7 +294,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Toca-Aqui/Preview Content\"";
-				DEVELOPMENT_TEAM = 2ZUKF3C2AM;
+				DEVELOPMENT_TEAM = 79DJA69MKY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app uses the camera to scan portions of text, helping to create a grammar document optimized for LIS (Italian Sign Language). Camera access is essential for this feature.";
@@ -324,7 +324,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Toca-Aqui/Preview Content\"";
-				DEVELOPMENT_TEAM = 2ZUKF3C2AM;
+				DEVELOPMENT_TEAM = 79DJA69MKY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app uses the camera to scan portions of text, helping to create a grammar document optimized for LIS (Italian Sign Language). Camera access is essential for this feature.";
