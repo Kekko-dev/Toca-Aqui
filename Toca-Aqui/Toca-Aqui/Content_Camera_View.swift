@@ -18,6 +18,7 @@ struct Content_Camera_View: View {
     
     // States for loading & progress.
     @State private var downloadProgress: Double = 0.0
+    @State private var reducingText: Double = 0.0
     @State private var isDownloading: Bool = false
     @State private var statusMessage: String = "Downloading the Model"
     
@@ -82,24 +83,29 @@ struct Content_Camera_View: View {
                 .onChange(of: recognisedText) { _, newValue in
                     if newValue != "Tap the button to scan a document." {
                         Task {
-                            isDownloading = true
-                            downloadProgress = 0.0
-                            statusMessage = "Downloading the Model"
+
+                            
+                                isDownloading = true
+                                downloadProgress = 0.0
+                                statusMessage = "Origo is preparing the system"
+                            
                             
                             // Phase 1: Download the model.
                             try await generate(structuredText: structuredText,
                                                  downloadProgress: $downloadProgress)
                             
-                            downloadProgress = 1.0
-                            statusMessage = "Creating pdf"
+
+                            
+                                downloadProgress = 0.0
+                                statusMessage = "Origo is making your text accessible"
+                            
                             
                             // Phase 2: Create the PDF.
-                            if let pdfURL = generateStructuredPDF(textSections: structuredText,
-                                                                    documentName: "Origo",
-                                                                    documentDate: Date(),
-                                                                    logo: UIImage(contentsOfFile: "Logo_Purple")) {
-                                for progress in stride(from: 1.0, through: 2.0, by: 0.1) {
-                                    downloadProgress = progress
+                            if let pdfURL = generateStructuredPDF(textSections: structuredText, documentName: "Origo", documentDate: Date(), logo: UIImage(contentsOfFile: "Logo_Purple") ) {
+                                for progress in stride(from: 0.0, through: 1.0, by: 0.1) {
+                                    
+                                        downloadProgress = progress
+                        
                                     try await Task.sleep(nanoseconds: 300_000_000)
                                 }
                                 pdfFile = PDFFile(url: pdfURL)
