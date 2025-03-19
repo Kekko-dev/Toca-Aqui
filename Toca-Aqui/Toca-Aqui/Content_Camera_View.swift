@@ -74,7 +74,7 @@ struct Content_Camera_View: View {
                             
                                 isDownloading = true
                                 downloadProgress = 0.0
-                                statusMessage = "Downloading the Model"
+                                statusMessage = "Origo is preparing the system"
                             
                             
                             // Phase 1: Download the model.

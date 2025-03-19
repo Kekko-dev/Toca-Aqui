@@ -21,16 +21,23 @@ struct LoadingScreen: View {
                 Spacer()
                 LottieViewRepresentable(animation: .named("documentAnim")!)
                     .frame(width: 50, height: 50)
-                    .scaleEffect(0.10)  
+                    .scaleEffect(0.10)
                     .scaledToFill()
                     .padding()
                 Spacer()
-                Text("Origo is doing the magic...")
+                /*Text("Origo is doing the magic...")
                     .font(.title) // Imposta lo stile del testo come 'title'
                     .fontWeight(.bold)
                 Text("\(statusMessage) \(Int(downloadProgress*100))%")
                     .font(.title2)
-                
+                */
+                Text("\(statusMessage)")
+                    .font(.title) // Imposta lo stile del testo come 'title'
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.center)
+                Text("\(Int(downloadProgress*100))%")
+                    .font(.title) // Imposta lo stile del testo come 'title'
+                    .fontWeight(.bold)
                 ProgressView(value: downloadProgress, total: 1.0)
                     .progressViewStyle(LinearProgressViewStyle())
                     .padding(.horizontal, 40)
