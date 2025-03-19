@@ -11,13 +11,25 @@ import VisionKit
 import Vision
 import UIKit
 
+//
+//  ScannerView.swift
+//  Toca-Aqui
+//
+//  Created by Francesco Silvestro on 21/02/25.
+//
+
+import SwiftUI
+import VisionKit
+import Vision
+import UIKit
+
 struct ScanDocumentView: UIViewControllerRepresentable {
     @Binding var recognisedText: String
     @Binding var structuredText: [(text: String, isTitle: Bool)]
     
     // Called when the user taps the native Cancel button.
     var onCancel: () -> Void
-
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(recognisedText: $recognisedText,
                     structuredText: $structuredText,
@@ -27,9 +39,6 @@ struct ScanDocumentView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> VNDocumentCameraViewController {
         let scanner = VNDocumentCameraViewController()
         scanner.delegate = context.coordinator
-        // Optionally add an instruction label if desired.
-        
-        
         return scanner
     }
     
@@ -42,84 +51,182 @@ struct ScanDocumentView: UIViewControllerRepresentable {
         @Binding var structuredText: [(text: String, isTitle: Bool)]
         var parent: ScanDocumentView
         
-        // Dictionary to map original text to LIS-friendly versions
+        // Mapping dictionaries for known texts
+        
         let lisTextMapping: [String: String] = [
             """
-            RITI DI ACCOGLIENZA
-            ANTIFONA D'INGRESSO
-            Cantate al Signore un canto nuovo, can-
-            tate al Signore, uomini di tutta la terra.
-            Maestà conore sono davanti a lui, forza
-            e splendore nel suo santuario.
-            Cel. Nel nome del Padre e del Figlio e del-
-            lo Spirito Santo.
-            Ass. Amen.
-            Cel. Il Signore, che guida i nostri cuori
-            all'amore e alla pazienza di Cristo, sia con
-            tutti voi.
-            Ass. E con il tuo spirito.
-            ATTO PENITENZIALE
-            Cel. Fratelli e sorelle, all'inizio di questa
-            celebrazione eucaristica, invochiamo la
-            misericordia di Dio, fonte di riconciliazio-
-            ne e di comunione.
-            Segue una breve pausa di silenzio.
-            Cel. Pietà di noi, Signore.
-            Ass. Contro di te abbiamo peccato.
-            Cel. Mostraci, Signore, la tua misericordia.
-            Ass. E donaci la tua salvezza.
-            Cel. Dio onnipotente abbia misericordia di
-            noi, perdoni i nostri peccati e ci conduca
-            alla vita eterna.
-            Cel. Kýrie, eléison.
-            Cel. Christe, eléison.
-            Cel. Kýrie, eléison.
-            Ass. Amen.
-            Ass. Kýrie, eléison.
-            Ass. Christe, eléison.
-            Ass. Kýrie, eléison.
+            PREPARIAMO LE VIE
+            DEL SIGNORE CHE VIENE
+            Chi tra di noi ascolterà Giovanni Battista e farà vere e pro-
+            prie scelte di conversione? Ricordandoci che la conver-
+            sione non è farci santi con la nostra bravura, bensì orienta-
+            re la nostra vita verso la misericordia divina che sta per ma-
+            nifestarsi, volgerci verso l'Amore che viene a salvarci! Si
+            tratta di preparare - insieme - la via del Signore, di togliere
+            tutti gli ostacoli, in noi e tra noi, che impediscono alla tene-
+            rezza divina di raggiungerci (/ Lettura e Vangelo). Allora po-
+            trà manifestarsi il "battesimo di fuoco"; il fuoco dell'Amore
+            che consuma il non-amore tra noi, e fa ardere i nostri cuori.
+            L'Avvento ci chiama alla conversione del cuore, così da
+            affrettare la venuta del giorno del Signore. Dobbiamo prepa-
+            rarci insieme, perché verranno nuovi cieli e una terra nuova
+            nei quali la giustizia - e solo essa - abiterà (II Lettura). Dob-
+            biamo prepararvi il mondo intorno a noi: Dio vuole che nes-
+            suno si perda, ma questo dipende anche dalla nostra testi-
+            monianza! La tua vita farà intravedere agli altri la bellezza
+            della speranza? Coraggio! È la tua missione!
+            fr. Antoine-Emmanuel, Frat. Monast. di Gerusalemme, Firenze
             """:
             """
-            **RITI DI ACCOGLIENZA**
+            **PREPARIAMO LE VIE **
+            **DEL SIGNORE CHE VIENE**
 
-            **CANTO DI INGRESSO**  
-            Cantiamo un canto nuovo per Dio.  
-            Tutte le persone della terra lodino Dio.  
-            Dio è grande e potente.  
-            Dio è pieno di luce e bellezza.  
-
-             
-            Sacerdote: Nel nome del Padre, del Figlio e dello Spirito Santo.  
-            Assemblea: Amen.  
-
-            Sacerdote: Il Signore ci aiuta ad amare e ad avere pazienza, sia con tutti voi.  
-            Assemblea: E con il tuo spirito.  
-
-
-            **ATTO PENITENZIALE**  
-            Sacerdote: Fratelli e sorelle, prima di iniziare la preghiera, chiediamo perdono a Dio per i nostri errori. Dio ci ama e ci perdona.  
-
-            (Silenzio per riflettere)  
-
-            Sacerdote: Signore, abbi pietà di noi.  
-            Assemblea: Abbiamo sbagliato contro di te.  
-
-            Sacerdote: Signore, mostraci il tuo amore.  
-            Assemblea: Donaci il tuo perdono.  
-
-            Sacerdote: Dio è buono. Lui ci perdona e ci dà la vita eterna.  
-
-            Sacerdote: Signore, abbi pietà.  
-            Assemblea: Signore, abbi pietà.  
-
-            Sacerdote: Cristo, abbi pietà.  
-            Assemblea: Cristo, abbi pietà.  
-
-            Sacerdote: Signore, abbi pietà.  
-            Assemblea: Signore, abbi pietà.
+            Chi tra noi ascolterà Giovanni Battista?
+            Chi cambierà vita per accogliere il Signore?
+            Convertirsi non significa diventare santi da soli con le nostre forze.
+            Significa aprire il cuore all’amore di Dio, che sta per venire.
+            Dobbiamo prepararci insieme!
+            Togliere gli ostacoli che ci separano da Dio e dagli altri.
+            Così la tenerezza di Dio potrà raggiungerci.
+            Quando il Signore verrà, ci sarà un battesimo di fuoco:
+            il fuoco dell’Amore che brucia tutto ciò che è male e accende i nostri cuori.
+            L’Avvento ci invita a cambiare cuore.
+            Dobbiamo prepararci, perché Dio promette un mondo nuovo,
+            fatto di pace e giustizia.
+            Ma non basta aspettare: Dobbiamo prepararci insieme!
+            Dio vuole salvare tutti, ma la nostra testimonianza è importante.
+            La tua vita mostrerà agli altri la bellezza della speranza?
+            Coraggio! Questa è la tua missione!
             """
         ]
         
+        let firstColumn: [String: String] = [
+            """
+            ANTIFONA D'INGRESSO (Cfr. Is 30,19.30) in piedi
+            Popolo di Sion, il Signore verrà a salvare le
+            genti, e farà udire la sua voce maestosa nel-
+            la letizia del vostro cuore.
+            Celebrante - Nel nome del Padre e del Figlio e
+            dello Spirito Santo. Assemblea Amen.
+            C-II Dio della speranza, che ci riempie di ogni
+            gioia e pace nella fede per la potenza dello Spi-
+            rito Santo, sia con tutti voi.
+            ATTO PENITENZIALE
+            A-E con il tuo spirito.
+            (si può cambiare)
+            C-Fratelli e sorelle, è attraverso la voce di Gio-
+            vanni Battista che oggi il Signore ci esorta ad
+            aprire il nostro cuore alla sua parola, perché la
+            grazia del perdono ci liberi da ogni corruzione
+            di peccato.
+            Breve pausa al silenzio.
+            -Signore, che sei venuto nel mondo per salvar-
+            ci, Kýrie, eléison.
+            A-Kýrie, eléison. -Cristo, che vieni a visitarci con la grazia del tuo
+            Spirito, Christe, eléison. A-Christe, eléison.
+            -Signore, che verrai un giorno a giudicare le no-
+            stre opere, Kýrie, eléison. A- Kýrie, eléison.
+            C-Dio onnipotente abbia misericordia di noi,
+            perdoni i nostri peccati e ci conduca alla vita
+            eterna.
+            A-Amen.
+            Non si dice il Gloria.
+            """:
+            """
+            **ANTIFONA D’INGRESSO**
+
+            Guida: Popolo di Sion, il Signore viene per salvare tutti.
+            Dio parlerà con voce potente e porterà gioia nei vostri cuori!
+            
+            Celebrante: Nel nome del Padre, del Figlio e dello Spirito Santo.
+
+            Tutti: Amen!
+
+            Celebrante: Dio della speranza ci dona gioia e pace.
+            Che il suo Spirito Santo sia con voi.
+
+            Tutti: E con il tuo spirito.
+
+
+            **ATTO PENITENZIALE**
+
+            Celebrante: Fratelli e sorelle, oggi il Signore ci parla attraverso Giovanni Battista.
+            Ci invita ad aprire il cuore alla sua parola. Dio vuole perdonarci e liberarci dal peccato.
+            Facciamo un momento di silenzio.
+
+            
+
+            Signore, tu sei venuto nel mondo per salvarci.
+            Kýrie, eléison.
+            
+            Tutti: Kýrie, eléison.
+            Cristo, tu vieni a visitarci con il tuo Spirito.
+            Christe, eléison.
+                
+            Tutti: Christe, eléison.
+            Signore, un giorno verrai per giudicare le nostre azioni.
+            Kýrie, eléison.
+            
+            Tutti: Kýrie, eléison.
+
+            Celebrante: Dio onnipotente ci perdoni, ci liberi dal peccato e ci guidi alla vita eterna.
+
+            Tutti: Amen!
+
+            
+            """
+        ]
+        
+        let secondColumn: [String: String] = [
+            """
+            ORAZIONE COLLETTA
+            C-Dio grande e misericordioso, fa' che il no-
+            stro impegno nel mondo non ci ostacoli nel
+            cammino verso il tuo Figlio, ma la sapienza
+            che viene dal cielo ci guidi alla comunione
+            con il Cristo, nostro Salvatore. Egli è Dio, e vi-
+            ve e regna...
+            A-Amen.
+            Oppure:
+            C-O Dio, Padre di ogni consolazione, che
+            all'umanità pellegrina nel tempo hai promesso
+            nuovi cieli è terra nuova, parla oggi al cuore
+            del tuo popolo, perché, in purezza di fede e
+            santità di vita, possa camminare verso il gior
+            no in oui ti manifesteral plenamente e ogni uo
+            mo vedrà la tua salvezza. Per il nostro Signo-
+            re Gesù Cristo...
+            A Amen. 15
+            """:
+            """
+            **ORAZIONE COLLETTA**
+
+            Celebrante:
+            Dio grande e buono,
+            aiutaci a vivere bene nel mondo,
+            senza dimenticare di seguire Gesù.
+
+            Fa’ che la tua sapienza ci guidi
+            e ci avvicini sempre di più a Cristo, nostro Salvatore,
+            che vive e regna per sempre.
+
+            Tutti: Amen!
+
+            Tutti: Amen!
+            """
+        ]
+        
+        // Combined mapping dictionaries
+        var mappingDictionaries: [String: String] {
+            var combined = lisTextMapping
+            for (key, value) in firstColumn {
+                combined[key] = value
+            }
+            for (key, value) in secondColumn {
+                combined[key] = value
+            }
+            return combined
+        }
         
         init(recognisedText: Binding<String>,
              structuredText: Binding<[(text: String, isTitle: Bool)]>,
@@ -139,13 +246,13 @@ struct ScanDocumentView: UIViewControllerRepresentable {
             controller.dismiss(animated: true)
         }
         
-        // This delegate method is called when the user taps the native Cancel button.
+        // Called when the user taps the native Cancel button.
         func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
             parent.onCancel()
             controller.dismiss(animated: true)
         }
         
-        //  Extract images from the scan.
+        // Extract images from the scan.
         private func extractImages(from scan: VNDocumentCameraScan) -> [CGImage] {
             var images = [CGImage]()
             for i in 0..<scan.pageCount {
@@ -156,11 +263,11 @@ struct ScanDocumentView: UIViewControllerRepresentable {
             return images
         }
         
-        
+        // Recognize text from the scanned images and try to match it with known texts.
         private func recognizeStructuredText(from images: [CGImage]) -> [(text: String, isTitle: Bool)] {
             var globalResult: [(text: String, isTitle: Bool)] = []
             
-            // Process each image one by one.
+            // Process each image.
             for image in images {
                 var observationsArray: [(String, Bool)] = []
                 let semaphore = DispatchSemaphore(value: 0)
@@ -187,7 +294,6 @@ struct ScanDocumentView: UIViewControllerRepresentable {
                 // Group consecutive non-title observations into paragraphs.
                 var groupedResult: [(text: String, isTitle: Bool)] = []
                 var currentParagraph = ""
-                
                 for (text, isTitle) in observationsArray {
                     if isTitle {
                         if !currentParagraph.isEmpty {
@@ -206,19 +312,18 @@ struct ScanDocumentView: UIViewControllerRepresentable {
                 if !currentParagraph.isEmpty {
                     groupedResult.append((currentParagraph, false))
                 }
-                
                 globalResult.append(contentsOf: groupedResult)
             }
             
-            // Combine all recognized text into one single block.
+            // Combine all recognized text into one block.
             let fullScannedText = globalResult.map { $0.text }.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
             
             // Normalize the scanned text.
             let normalizedScannedText = normalizeText(fullScannedText)
             print("Normalized Scanned Text:\n\(normalizedScannedText)")
             
-            // Check the mapping dictionary using fuzzy word matching.
-            for (original, lisVersion) in lisTextMapping {
+            // Check each mapping dictionary using fuzzy matching.
+            for (original, lisVersion) in mappingDictionaries {
                 let normalizedOriginal = normalizeText(original)
                 print("Normalized Expected Text:\n\(normalizedOriginal)")
                 
@@ -234,49 +339,41 @@ struct ScanDocumentView: UIViewControllerRepresentable {
                 }
             }
             
-            // If no fuzzy match is found, return the structured result as usual.
+            // If no match is found, return the original structured result.
             return globalResult
         }
         
+        // Parse the known LIS-friendly text into structured blocks.
         private func parseStructuredLIS(_ text: String) -> [(text: String, isTitle: Bool)] {
             var blocks: [(String, Bool)] = []
-            // Split the text into lines.
             let lines = text.components(separatedBy: "\n")
-            
-            // Process each line.
             for line in lines {
                 let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !trimmed.isEmpty else { continue }
-                
-                // If the line starts and ends with "**", consider it a title.
                 if trimmed.hasPrefix("**") && trimmed.hasSuffix("**") {
                     let title = trimmed.replacingOccurrences(of: "**", with: "").trimmingCharacters(in: .whitespaces)
                     blocks.append((title, true))
                 } else {
-                    // Otherwise, treat it as a body text block.
                     blocks.append((trimmed, false))
                 }
             }
             return blocks
         }
         
+        // Normalize text by removing hyphenated line breaks and extra spaces.
         private func normalizeText(_ text: String) -> String {
-            // Remove hyphenated line breaks.
             let withoutHyphenLineBreaks = text.replacingOccurrences(of: "-\n", with: "")
-            // Replace newlines with a space.
             let withoutNewlines = withoutHyphenLineBreaks.replacingOccurrences(of: "\n", with: " ")
-            // Reduce multiple spaces and trim.
             let trimmed = withoutNewlines.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines)
             return trimmed.lowercased()
         }
-    
         
+        // A simple heuristic: if text is short and entirely uppercase, treat it as a title.
         private func isLikelyTitle(_ text: String) -> Bool {
             return text.count < 50 && text == text.uppercased()
         }
     }
 }
-
 
 
 
