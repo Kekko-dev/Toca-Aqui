@@ -9,7 +9,7 @@ import SwiftData
 import PDFKit
 import SwiftUI
 import UIKit
-import CoreText
+
 
 @Model // Marks this class as a SwiftData model, allowing it to be stored in a database
 class SavedPDF {
