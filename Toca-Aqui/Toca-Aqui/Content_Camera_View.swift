@@ -82,13 +82,13 @@ struct Content_Camera_View: View {
                                                  downloadProgress: $downloadProgress)
                             
                             
-                                downloadProgress = 1.0
+                                downloadProgress = 0.0
                                 statusMessage = "Origo is making your text accessible"
                             
                             
                             // Phase 2: Create the PDF.
                             if let pdfURL = generateStructuredPDF(textSections: structuredText, documentName: "Origo", documentDate: Date(), logo: UIImage(contentsOfFile: "Logo_Purple") ) {
-                                for progress in stride(from: 1.0, through: 2.0, by: 0.1) {
+                                for progress in stride(from: 0.0, through: 1.0, by: 0.1) {
                                     
                                         downloadProgress = progress
                                     
