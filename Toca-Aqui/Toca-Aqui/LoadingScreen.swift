@@ -23,6 +23,7 @@ struct LoadingScreen: View {
                     .frame(width: 50, height: 50)
                     .scaleEffect(0.10)
                     .scaledToFill()
+                    .offset(x: 15)
                     .padding()
                 Spacer()
                 /*Text("Origo is doing the magic...")
@@ -92,5 +93,23 @@ struct VisualEffectBlur: UIViewRepresentable {
     
     func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
         //nothing
+    }
+}
+
+
+
+struct LoadingScreen_Previews: PreviewProvider {
+    @State static var isDownloading = true
+    @State static var downloadProgress = 0.69
+    @State static var statusMessage = "Gas Borrowed..."
+
+    static var previews: some View {
+        LoadingScreen(
+            isDownloading: $isDownloading,
+            downloadProgress: $downloadProgress,
+            statusMessage: $statusMessage
+        )
+        .previewLayout(.sizeThatFits)
+        .padding()
     }
 }
