@@ -41,7 +41,7 @@ struct Content_Camera_View: View {
             ZStack {
                 Color.church_purple_color
                     .edgesIgnoringSafeArea(.all)
-                    .opacity(0.1)
+                    .opacity(0.15)
                 
                 VStack(spacing: 20) {
                     Button(action: {
@@ -50,7 +50,7 @@ struct Content_Camera_View: View {
                         Image(systemName: "camera.fill")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 90, height: 90)
+                            .frame(width: 120, height: 120)
                             .padding(48)
                             .background {
                                 Circle()
@@ -113,6 +113,7 @@ struct Content_Camera_View: View {
                                  fileName: documentName,
                                  context: modelContext)
                     }, documentName: $documentName)
+                    .interactiveDismissDisabled(true)
                 }
                 
                 // Loading overlay.
@@ -134,7 +135,7 @@ struct Content_Camera_View: View {
                             HStack {
                                 Text("Documents")
                                     .font(.headline)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color.church_purple_color)
                                     .padding(.leading, 20)
                                 Spacer()
                                 Button(action: {
@@ -155,6 +156,7 @@ struct Content_Camera_View: View {
             }
             .foregroundStyle(Color.church_purple_color)
         }
+        .tint(Color.church_purple_color)
         // Present the scanner as a full-screen view.
     }
 }
@@ -165,5 +167,13 @@ extension Color {
     static let church_purple_color: Color = Color(red: 134/255, green: 59/255, blue: 158/255)
     static let church_red_color: Color = Color(red: 239/255, green: 28/255, blue: 25/255)
     static let church_green_color: Color = Color(red: 88/255, green: 187/255, blue: 134/255)
+
+}
+
+
+extension UIColor {
+    static let church_purple_color: UIColor = UIColor(red: 134/255, green: 59/255, blue: 158/255, alpha: 1.0)
+    static let church_red_color: UIColor = UIColor(red: 239/255, green: 28/255, blue: 25/255, alpha: 1.0)
+    static let church_green_color: UIColor = UIColor(red: 88/255, green: 187/255, blue: 134/255, alpha: 1.0)
 
 }

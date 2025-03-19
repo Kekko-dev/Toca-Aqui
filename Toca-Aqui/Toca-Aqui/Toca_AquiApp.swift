@@ -13,6 +13,7 @@ struct TocAquiApp: App {
     var sharedModelContainer: ModelContainer
 
     init() {
+        
         do {
             let schema = Schema([SavedPDF.self])
             sharedModelContainer = try ModelContainer(for: schema)

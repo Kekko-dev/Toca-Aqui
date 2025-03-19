@@ -12,20 +12,29 @@ import PDFKit
 struct PDFKitView: UIViewRepresentable {
     let pdfURL: URL
 
-    func makeUIView(context: Context) -> PDFView {
-        let pdfView = PDFView() // Creates a PDFView (UIKit component for displaying PDFs).
-        pdfView.autoScales = true // pdfView.autoScales = true → Automatically zooms the PDF to fit the screen.
+    func makeUIView(context: Context) -> UIView {
+        // Container view with the desired background.
+        let containerView = UIView()
+        containerView.backgroundColor = UIColor.church_purple_color.withAlphaComponent(0.015)
         
-        if let document = PDFDocument(url: pdfURL) { // Loads the PDF file from the provided pdfURL.
+        // Create PDFView with clear background.
+        let pdfView = PDFView(frame: containerView.bounds)
+        pdfView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        pdfView.autoScales = true
+        pdfView.backgroundColor = .clear
+        
+        if let document = PDFDocument(url: pdfURL) {
             pdfView.document = document
-            print(" PDF successfully loaded in PDFKit !")
+            print("PDF successfully loaded in PDFKit!")
         } else {
-            print(" Failed to load PDF.")
+            print("Failed to load PDF.")
         }
-        return pdfView
+        
+        containerView.addSubview(pdfView)
+        return containerView
     }
 
-    func updateUIView(_ uiView: PDFView, context: Context) {}
+    func updateUIView(_ uiView: UIView, context: Context) {}
 }
 
 /*
@@ -46,15 +55,18 @@ struct PDFViewer: View {  //VIEW For displaying the file name of the PDF
     let pdfURL: URL
 
     var body: some View {
-        VStack {
-            Text("\(pdfURL.lastPathComponent)")
-                .font(.headline)
-                .padding()
+        ZStack {
+            Color.church_purple_color
+                .edgesIgnoringSafeArea(.all)
+                .opacity(0.3)
+                .zIndex(-1)
             
             PDFKitView(pdfURL: pdfURL)
+            
         }
+       
         
-        .navigationBarTitleDisplayMode(.inline)
+        
         .onAppear {
             print(" Opening PDF: \(pdfURL.path)")
             debugPrintPDFContents(url: pdfURL) // Debug PDF contents
