@@ -35,6 +35,9 @@ struct Content_Camera_View: View {
 
     @Environment(\.modelContext) private var modelContext
 
+    // New state variable for the breathing animation
+    @State private var imageScale: CGFloat = 1.0
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -46,62 +49,62 @@ struct Content_Camera_View: View {
                     Button(action: {
                         showScanner = true
                     }) {
-                        Image(systemName: "camera.fill")
+                        Image("Camera")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 120, height: 120)
-                            .padding(48)
+                            .scaleEffect(imageScale) // Apply the scale effect here.
+                            .padding()
                             .background {
                                 Circle()
                                     .fill(Color.white)
-                                    .shadow(radius: 10)
+                                    .opacity(0.35)
+                                    .frame(width: 190, height: 190)
+                                    .scaleEffect(imageScale)
+                            }
+                            // Start the breathing animation when the image appears.
+                            .onAppear {
+                                withAnimation(Animation.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
+                                    imageScale = 1.1
+                                }
                             }
                     }
                 }
                 .fullScreenCover(isPresented: $showScanner) {
-                            ScanDocumentView(recognisedText: $recognisedText,
-                                             structuredText: $structuredText,
-                                             onCancel: { showScanner = false })
-                            .ignoresSafeArea()
-                        }
+                    ScanDocumentView(recognisedText: $recognisedText,
+                                     structuredText: $structuredText,
+                                     onCancel: { showScanner = false })
+                        .ignoresSafeArea()
+                }
                 .foregroundStyle(Color.church_purple_color)
                 .padding()
                 // Process the scanned text once recognisedText is updated.
                 .onChange(of: recognisedText) { _, newValue in
                     if newValue != "Tap the button to scan a document." {
                         Task {
-                            
-                                isDownloading = true
-                                downloadProgress = 0.0
-                                statusMessage = "Downloading the Model"
-                            
+                            isDownloading = true
+                            downloadProgress = 0.0
+                            statusMessage = "Downloading the Model"
                             
                             // Phase 1: Download the model.
                             try await generate(structuredText: structuredText,
                                                  downloadProgress: $downloadProgress)
                             
-                            
-                                downloadProgress = 1.0
-                                statusMessage = "Creating pdf"
-                            
+                            downloadProgress = 1.0
+                            statusMessage = "Creating pdf"
                             
                             // Phase 2: Create the PDF.
-                            if let pdfURL = generateStructuredPDF(textSections: structuredText, documentName: "Origo", documentDate: Date(), logo: UIImage(contentsOfFile: "Logo_Purple") ) {
+                            if let pdfURL = generateStructuredPDF(textSections: structuredText,
+                                                                    documentName: "Origo",
+                                                                    documentDate: Date(),
+                                                                    logo: UIImage(contentsOfFile: "Logo_Purple")) {
                                 for progress in stride(from: 1.0, through: 2.0, by: 0.1) {
-                                    
-                                        downloadProgress = progress
-                                    
+                                    downloadProgress = progress
                                     try await Task.sleep(nanoseconds: 300_000_000)
                                 }
-                                
-                                
-                                    pdfFile = PDFFile(url: pdfURL)
-                                
+                                pdfFile = PDFFile(url: pdfURL)
                             }
-                            
-                           
-                                isDownloading = false
-                            
+                            isDownloading = false
                         }
                     }
                 }
@@ -156,10 +159,8 @@ struct Content_Camera_View: View {
             .foregroundStyle(Color.church_purple_color)
         }
         .tint(Color.church_purple_color)
-        // Present the scanner as a full-screen view.
     }
 }
-
 
 
 extension Color {
